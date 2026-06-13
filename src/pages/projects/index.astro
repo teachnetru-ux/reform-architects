@@ -1,0 +1,14 @@
+---
+import Layout from '../../components/Layout.astro';
+import ProjectsCatalog from '../../components/ProjectsCatalog.astro';
+import { categories, getByCategory } from '../../data/projects.js';
+
+const cat = categories.all;
+const items = getByCategory('all');
+const description =
+  'Проекты Reform Architects: квартиры и апартаменты, дома и виллы, рестораны и бутики. Эстетика и реализация — единый процесс. Курируем, а не заполняем сетку.';
+---
+
+<Layout title={cat.title} description={description}>
+  <ProjectsCatalog category={cat} items={items} />
+</Layout>

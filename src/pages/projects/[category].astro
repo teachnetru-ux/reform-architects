@@ -1,0 +1,26 @@
+---
+import Layout from '../../components/Layout.astro';
+import ProjectsCatalog from '../../components/ProjectsCatalog.astro';
+import { categories, getByCategory } from '../../data/projects.js';
+
+export function getStaticPaths() {
+  return ['apartments', 'houses', 'restaurants'].map((category) => ({ params: { category } }));
+}
+
+const { category } = Astro.params;
+const cat = categories[category];
+const items = getByCategory(category);
+
+const descriptions = {
+  apartments:
+    'Интерьеры квартир и апартаментов под ключ: планировка, концепция, рабочая документация, комплектация и авторский надзор. Вы въезжаете в готовое пространство.',
+  houses:
+    'Дома и виллы под участок, образ жизни и реальный бюджет реализации — от посадки на участок до авторского надзора. Архитектура, интерьер и реализация в одном контуре.',
+  restaurants:
+    'Рестораны и бутики как инструмент бизнеса: сценарий гостя, свет и материалы работают на выручку. От концепции до реализации с расчётом на эксплуатацию.',
+};
+---
+
+<Layout title={cat.title} description={descriptions[category]}>
+  <ProjectsCatalog category={cat} items={items} />
+</Layout>

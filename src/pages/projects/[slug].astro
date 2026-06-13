@@ -1,0 +1,295 @@
+---
+import Layout from '../../components/Layout.astro';
+import Figure from '../../components/Figure.astro';
+import ProjectCard from '../../components/ProjectCard.astro';
+import LeadForm from '../../components/LeadForm.astro';
+import { withBase } from '../../lib/img.js';
+import { projects, projectScope, showcase } from '../../data/projects.js';
+
+export function getStaticPaths() {
+  return projects.map((p) => ({ params: { slug: p.slug }, props: { project: p } }));
+}
+
+const { project: p } = Astro.props;
+const related = showcase.filter((x) => x.slug !== p.slug).slice(0, 3);
+const description =
+  p.essence ||
+  `${p.name} — ${p.type}. Проект Reform Architects: от концепции до реализации в едином контуре ответственности.`;
+
+const gallery = p.gallery || [];
+const firstBlock = gallery.slice(0, 2);
+const restGallery = gallery.slice(2);
+---
+
+<Layout title={p.name} description={description} ogImage={p.cover}>
+  <article>
+    {/* 1 — Hero */}
+    <header class="proj-hero">
+      <div class="wrap">
+        <a href={withBase('/projects/')} class="arrow-link proj-hero__back">
+          <span class="arr-back" aria-hidden="true">←</span>&nbsp;Все проекты
+        </a>
+        <h1 class="proj-hero__title" data-reveal>{p.name}</h1>
+        <div class="proj-hero__meta" data-reveal>
+          <span>{p.type}</span>
+          {p.area && <span>{p.area}</span>}
+          {p.year && <span>{p.year}</span>}
+          {p.status && <span>{p.status}</span>}
+          {p.city && <span class="proj-hero__city">{p.city}</span>}
+        </div>
+        <div class="proj-hero__media" data-reveal>
+          <Figure name={p.heroMedia} alt={`${p.name} — ${p.type}`} ratio="16 / 9" eager={true} />
+        </div>
+      </div>
+    </header>
+
+    {/* 2 — Эссенция */}
+    {
+      p.essence && (
+        <section class="section-sm">
+          <div class="wrap">
+            <p class="proj-essence" data-reveal>
+              {p.essence}
+            </p>
+          </div>
+        </section>
+      )
+    }
+
+    {/* 3 — Первый визуальный блок */}
+    {
+      firstBlock.length > 0 && (
+        <section class="section-sm">
+          <div class="wrap proj-firstblock">
+            {firstBlock.map((g) => (
+              <Figure name={g.name} alt={g.caption || `${p.name} — кадр`} ratio="4 / 5" />
+            ))}
+          </div>
+        </section>
+      )
+    }
+
+    {/* 4 — Контекст проекта */}
+    {
+      p.context && (
+        <section class="section">
+          <div class="wrap">
+            <h2 class="eyebrow text-muted-light mb-10" data-reveal>
+              Контекст проекта
+            </h2>
+            <div class="proj-context">
+              <div class="proj-context__item" data-reveal>
+                <h3 class="proj-context__t">Задача</h3>
+                <p class="proj-context__p">{p.context.task}</p>
+              </div>
+              <div class="proj-context__item" data-reveal>
+                <h3 class="proj-context__t">Ограничения</h3>
+                <p class="proj-context__p">{p.context.limits}</p>
+              </div>
+              <div class="proj-context__item" data-reveal>
+                <h3 class="proj-context__t">Решение</h3>
+                <p class="proj-context__p">{p.context.solution}</p>
+              </div>
+            </div>
+          </div>
+        </section>
+      )
+    }
+
+    {/* 5 — Ключевая идея */}
+    {
+      p.idea && (
+        <section class="section bg-surface-dark text-ondark">
+          <div class="wrap proj-idea">
+            <h2 class="eyebrow text-muted-dark mb-6" data-reveal>
+              Ключевая идея
+            </h2>
+            <p class="proj-idea__text" data-reveal>
+              {p.idea}
+            </p>
+            {p.hero && (
+              <div class="proj-heromove" data-reveal>
+                <span class="eyebrow text-muted-dark">Герой-приём</span>
+                <p class="proj-heromove__text">{p.hero}</p>
+              </div>
+            )}
+          </div>
+        </section>
+      )
+    }
+
+    {/* 6 — Состав работ */}
+    <section class="section">
+      <div class="wrap">
+        <h2 class="eyebrow text-muted-light mb-2" data-reveal>Состав работ</h2>
+        <ul class="scope-list">
+          {projectScope.map((s) => <li class="scope-list__item" data-reveal>{s}</li>)}
+        </ul>
+      </div>
+    </section>
+
+    {/* 7 — Визуальная история (галерея) */}
+    {
+      restGallery.length > 0 && (
+        <section class="section-sm">
+          <div class="wrap">
+            <h2 class="eyebrow text-muted-light mb-10" data-reveal>
+              Визуальная история
+            </h2>
+            <div class="proj-gallery">
+              {restGallery.map((g) => (
+                <figure class="proj-gallery__item" data-reveal>
+                  <Figure name={g.name} alt={g.caption || `${p.name} — кадр`} ratio="16 / 9" />
+                  {g.caption && <figcaption class="proj-gallery__cap">{g.caption}</figcaption>}
+                </figure>
+              ))}
+            </div>
+          </div>
+        </section>
+      )
+    }
+
+    {/* 8 — Смотрите также */}
+    <section class="section">
+      <div class="wrap">
+        <div class="block-head">
+          <h2 class="text-h2">Смотрите также</h2>
+          <a href={withBase('/projects/')} class="arrow-link block-head__link">
+            Все проекты<span class="arr" aria-hidden="true">→</span>
+          </a>
+        </div>
+        <div class="showcase">
+          {related.map((r) => <ProjectCard project={r} />)}
+        </div>
+      </div>
+    </section>
+  </article>
+
+  {/* 9 — Форма захвата */}
+  <LeadForm />
+</Layout>
+
+<style>
+  .proj-hero {
+    padding-top: calc(var(--header-h) + clamp(2rem, 1.5rem + 3vw, 3.5rem));
+  }
+  .proj-hero__back {
+    color: #6a6a66;
+  }
+  .proj-hero__back:hover {
+    color: #141414;
+  }
+  .arr-back {
+    transition: transform 0.35s cubic-bezier(0.22, 1, 0.36, 1);
+    display: inline-block;
+  }
+  .proj-hero__back:hover .arr-back {
+    transform: translateX(-4px);
+  }
+  .proj-hero__title {
+    margin-top: 1.75rem;
+    font-size: clamp(2.6rem, 1.6rem + 4.4vw, 4rem);
+    line-height: 1.02;
+  }
+  .proj-hero__meta {
+    margin-top: 1.25rem;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.4rem 1.25rem;
+    font-family: var(--font-sans);
+    font-size: 0.6875rem;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+    color: #5f5f5b;
+  }
+  .proj-hero__city {
+    color: #6a6a66;
+  }
+  .proj-hero__media {
+    margin-top: clamp(2rem, 1.5rem + 3vw, 3.5rem);
+  }
+
+  .proj-essence {
+    max-width: 28ch;
+    font-family: var(--font-serif);
+    font-size: clamp(1.6rem, 1.2rem + 1.8vw, 2.4rem);
+    line-height: 1.22;
+    letter-spacing: -0.01em;
+  }
+
+  .proj-firstblock {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 1.25rem;
+  }
+
+  .proj-context {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 2.5rem;
+  }
+  .proj-context__t {
+    font-size: 0.6875rem;
+    font-family: var(--font-sans);
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+    color: #6a6a66;
+  }
+  .proj-context__p {
+    margin-top: 0.85rem;
+    font-family: var(--font-sans);
+    font-weight: 300;
+    font-size: 1.0625rem;
+    line-height: 1.55;
+    color: #2b2b2a;
+  }
+
+  .proj-idea {
+    max-width: 60ch;
+  }
+  .proj-idea__text {
+    font-family: var(--font-serif);
+    font-size: clamp(1.5rem, 1.2rem + 1.4vw, 2.1rem);
+    line-height: 1.28;
+  }
+  .proj-heromove {
+    margin-top: 2.5rem;
+    padding-top: 1.75rem;
+    border-top: 1px solid rgba(244, 242, 236, 0.16);
+  }
+  .proj-heromove__text {
+    margin-top: 0.75rem;
+    font-family: var(--font-sans);
+    font-weight: 300;
+    font-size: 1.0625rem;
+    line-height: 1.55;
+    color: rgba(244, 242, 236, 0.84);
+    max-width: 46ch;
+  }
+
+  .proj-gallery {
+    display: flex;
+    flex-direction: column;
+    gap: clamp(2rem, 1.5rem + 3vw, 3.5rem);
+  }
+  .proj-gallery__cap {
+    margin-top: 0.9rem;
+    font-family: var(--font-sans);
+    font-size: 0.8125rem;
+    letter-spacing: 0.02em;
+    color: #6a6a66;
+  }
+
+  @media (min-width: 640px) {
+    .proj-firstblock {
+      grid-template-columns: repeat(2, 1fr);
+      gap: 1.5rem;
+    }
+  }
+  @media (min-width: 768px) {
+    .proj-context {
+      grid-template-columns: repeat(3, 1fr);
+      gap: 3rem;
+    }
+  }
+</style>
