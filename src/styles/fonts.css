@@ -1,0 +1,49 @@
+/* ============================================================
+   Reform Architects — Шрифты
+
+   Бренд: Baskerville Old Face (сериф, голос бренда) + Century Gothic (UI).
+   Десктопные .zip ≠ веб-лицензия, поэтому на этапе разработки стартуем
+   на лицензионно чистых Google-аналогах, подключённых <link> в <head>:
+     • Baskervville  → близок к Baskerville Old Face (заголовки/лого)
+     • Jost          → геометрический гротеск вместо Century Gothic (UI)
+
+   ПРОДАКШЕН-СВОП на лицензионные файлы:
+     1. купите webfont-лицензию на оба шрифта;
+     2. положите .woff2 в /public/fonts/;
+     3. раскомментируйте @font-face ниже и второй блок :root;
+     4. уберите <link rel="...gstatic..."> из Layout.astro.
+   Структура CSS-переменных не меняется — вёрстка остаётся прежней.
+   ============================================================ */
+
+:root {
+  --font-serif: 'Baskervville', 'Baskerville Old Face', 'Baskerville', Georgia, 'Times New Roman', serif;
+  --font-sans: 'Jost', 'Century Gothic', 'Questrial', system-ui, -apple-system, 'Segoe UI', sans-serif;
+}
+
+/* ── Лицензионный своп (раскомментировать, файлы в /public/fonts) ──────
+@font-face {
+  font-family: 'Baskerville Old Face';
+  src: url('/reform-architects/fonts/BaskervilleOldFace.woff2') format('woff2');
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+@font-face {
+  font-family: 'Century Gothic';
+  src: url('/reform-architects/fonts/CenturyGothic.woff2') format('woff2');
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+@font-face {
+  font-family: 'Century Gothic';
+  src: url('/reform-architects/fonts/CenturyGothic-Bold.woff2') format('woff2');
+  font-weight: 700;
+  font-style: normal;
+  font-display: swap;
+}
+:root {
+  --font-serif: 'Baskerville Old Face', Georgia, serif;
+  --font-sans: 'Century Gothic', system-ui, sans-serif;
+}
+───────────────────────────────────────────────────────────────────── */
