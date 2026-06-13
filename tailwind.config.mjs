@@ -21,10 +21,11 @@ export default {
         },
       },
 
-      // ── Шрифты (через CSS-переменные → лёгкий своп на лицензионные) ────
+      // ── Шрифт: одно семейство на весь сайт (Montserrat), задано в fonts.css ──
       fontFamily: {
-        serif: ['var(--font-serif)'],
         sans: ['var(--font-sans)'],
+        // алиас на случай старых ссылок; серифа в макете нет
+        serif: ['var(--font-sans)'],
       },
 
       // ── Радиусы ───────────────────────────────────────────────────────
@@ -42,10 +43,10 @@ export default {
 
       // ── Тип-шкала (fluid, clamp) ─────────────────────────────────────
       fontSize: {
-        display: ['clamp(2.6rem, 1.5rem + 4.6vw, 3.75rem)', { lineHeight: '1.04', letterSpacing: '-0.005em' }],
-        h2: ['clamp(1.875rem, 1.1rem + 2.8vw, 2.75rem)', { lineHeight: '1.1' }],
-        h3: ['clamp(1.5rem, 1.1rem + 1.5vw, 2rem)', { lineHeight: '1.14' }],
-        project: ['clamp(1.75rem, 1.2rem + 1.9vw, 2rem)', { lineHeight: '1.08' }],
+        display: ['clamp(2.6rem, 1.5rem + 4.6vw, 3.75rem)', { lineHeight: '1.05', letterSpacing: '-0.02em' }],
+        h2: ['clamp(1.875rem, 1.1rem + 2.8vw, 2.75rem)', { lineHeight: '1.12', letterSpacing: '-0.015em' }],
+        h3: ['clamp(1.5rem, 1.1rem + 1.5vw, 2rem)', { lineHeight: '1.16', letterSpacing: '-0.01em' }],
+        project: ['clamp(1.75rem, 1.2rem + 1.9vw, 2rem)', { lineHeight: '1.1', letterSpacing: '-0.015em' }],
         lead: ['clamp(1.0625rem, 1rem + 0.35vw, 1.1875rem)', { lineHeight: '1.55' }],
         meta: ['0.6875rem', { lineHeight: '1.45', letterSpacing: '0.16em' }],
         label: ['0.6875rem', { lineHeight: '1.4', letterSpacing: '0.2em' }],

@@ -64,18 +64,21 @@ public/img/luciano-cover.jpg   ← положите это → сборка по
 
 ---
 
-## 🔤 Шрифты
+## 🔤 Шрифт
 
-Дев-режим использует лицензионно чистые Google-аналоги (подключены `<link>` в
-`src/components/Layout.astro`):
+Одно семейство на весь сайт — **Montserrat** (Google Fonts, поддержка кириллицы),
+подключено `<link>` в `src/components/Layout.astro`. Серифа в макете нет.
 
-- **Baskervville** — бренд-сериф (близок к Baskerville Old Face): заголовки, лого.
-- **Jost** — UI-гротеск (вместо Century Gothic): навигация, мета, body.
+Семейство задаётся в **одном месте** — переменной `--font-sans` в
+`src/styles/fonts.css` (на неё ссылается Tailwind `font-sans`).
 
-**Своп на лицензионные файлы** (Baskerville Old Face + Century Gothic): см.
-подробную инструкцию в `src/styles/fonts.css` — кладёте `.woff2` в
-`public/fonts/`, раскомментируете `@font-face` и второй блок `:root`. Структура
-CSS-переменных (`--font-serif` / `--font-sans`) не меняется.
+Веса (по §3 ТЗ): hero/секции **300**, тайтлы проектов **400**, лого **500**,
+навигация / лейблы / мета / кнопки / пилюли **400**, body **400**, лиды и
+крупные display-фразы **300**.
+
+**Self-host своп** (лицензия / офлайн / перформанс): кладёте `.woff2` в
+`public/fonts/`, раскомментируете `@font-face` в `fonts.css` — переменная
+`--font-sans` не меняется.
 
 ---
 
@@ -102,7 +105,7 @@ formEndpoint: 'https://formspree.io/f/xxxxxxx',
 
 - **Цвет:** `ink #141414`, `surface.dark #161616`, `surface.light #F2F1EC`,
   `ondark #F4F2EC`, `muted.*`, `line.*`. Акцентного цвета нет.
-- **Шрифты:** `font-serif` / `font-sans` (через CSS-переменные).
+- **Шрифт:** одно семейство — Montserrat (`--font-sans` → Tailwind `font-sans`).
 - **Радиусы:** `pill 30px`, `glass 22px`, `photo 4px`.
 - **Стекло** (`.glass-dark` / `.glass-light`) — только шапка, капсула CTA в hero,
   cookie-плашка.
