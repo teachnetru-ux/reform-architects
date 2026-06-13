@@ -1,0 +1,49 @@
+---
+/**
+ * Слот изображения с авто-подстановкой (SVG-заглушка → реальный растр),
+ * ленивой загрузкой и обязательным alt. Менять код под каждое фото не нужно —
+ * достаточно положить файл с тем же именем в public/img/.
+ */
+import { resolveImage } from '../lib/img.js';
+
+interface Props {
+  name: string;
+  alt: string;
+  ratio?: string;
+  fill?: boolean;
+  eager?: boolean;
+  sizes?: string;
+  class?: string;
+  imgClass?: string;
+}
+
+const {
+  name,
+  alt,
+  ratio = '4 / 3',
+  fill = false,
+  eager = false,
+  sizes,
+  class: cls = '',
+  imgClass = '',
+} = Astro.props;
+
+const { src, isPlaceholder } = resolveImage(name);
+const ratioCss = ratio.replace('/', ' / ');
+---
+
+<figure
+  class:list={['fig', fill && 'fig--fill', cls]}
+  style={!fill ? `--ratio:${ratioCss}` : undefined}
+  data-placeholder={isPlaceholder ? '' : undefined}
+>
+  <img
+    src={src}
+    alt={alt}
+    class:list={['fig__img', imgClass]}
+    loading={eager ? 'eager' : 'lazy'}
+    decoding="async"
+    sizes={sizes}
+    {...(eager ? { fetchpriority: 'high' } : {})}
+  />
+</figure>

@@ -1,0 +1,76 @@
+---
+import Layout from './Layout.astro';
+import { site } from '../data/site.js';
+import { withBase } from '../lib/img.js';
+
+interface Props {
+  title: string;
+  description: string;
+}
+const { title, description } = Astro.props;
+---
+
+<Layout title={title} description={description} noindex={true}>
+  <section class="section section-top">
+    <div class="wrap legal">
+      <a href={withBase('/')} class="arrow-link legal__back">
+        <span class="arr-back" aria-hidden="true">←</span>&nbsp;На главную
+      </a>
+      <h1 class="text-display legal__title">{title}</h1>
+      <div class="legal__body">
+        <slot />
+      </div>
+      <p class="legal__contact">
+        Вопросы по обработке данных — <a href={`mailto:${site.email}`}>{site.email}</a>.
+      </p>
+    </div>
+  </section>
+</Layout>
+
+<style>
+  .legal {
+    max-width: 64ch;
+  }
+  .legal__back {
+    color: #6a6a66;
+  }
+  .legal__back:hover {
+    color: #141414;
+  }
+  .arr-back {
+    display: inline-block;
+    transition: transform 0.35s cubic-bezier(0.22, 1, 0.36, 1);
+  }
+  .legal__back:hover .arr-back {
+    transform: translateX(-4px);
+  }
+  .legal__title {
+    margin-top: 1.75rem;
+  }
+  .legal__body {
+    margin-top: 2rem;
+  }
+  .legal__body :global(p) {
+    font-family: var(--font-sans);
+    font-weight: 300;
+    font-size: 1.0625rem;
+    line-height: 1.6;
+    color: #2b2b2a;
+  }
+  .legal__body :global(p + p) {
+    margin-top: 1.25rem;
+  }
+  .legal__contact {
+    margin-top: 2.5rem;
+    padding-top: 1.5rem;
+    border-top: 1px solid rgba(20, 20, 20, 0.14);
+    font-family: var(--font-sans);
+    font-size: 0.9rem;
+    color: #6a6a66;
+  }
+  .legal__contact a {
+    color: #141414;
+    text-decoration: underline;
+    text-underline-offset: 2px;
+  }
+</style>

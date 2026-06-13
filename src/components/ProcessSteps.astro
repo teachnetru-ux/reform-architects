@@ -1,0 +1,73 @@
+---
+import { process } from '../data/content.js';
+
+interface Props {
+  tone?: 'light' | 'dark';
+}
+const { tone = 'light' } = Astro.props;
+---
+
+<ol class:list={['steps', tone === 'dark' && 'steps--dark']}>
+  {
+    process.map((s, i) => (
+      <li class="step" data-reveal>
+        <span class="step__num">{String(i + 1).padStart(2, '0')}</span>
+        <h3 class="step__title">{s.title}</h3>
+        <p class="step__text">{s.text}</p>
+      </li>
+    ))
+  }
+</ol>
+
+<style>
+  .steps {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 0;
+    list-style: none;
+    counter-reset: step;
+  }
+  .step {
+    padding-block: 1.75rem;
+    border-top: 1px solid rgba(20, 20, 20, 0.14);
+  }
+  .step__num {
+    font-family: var(--font-sans);
+    font-size: 0.6875rem;
+    letter-spacing: 0.2em;
+    color: #6a6a66;
+  }
+  .step__title {
+    margin-top: 0.85rem;
+    font-size: clamp(1.5rem, 1.2rem + 1.1vw, 1.9rem);
+    line-height: 1.1;
+  }
+  .step__text {
+    margin-top: 0.6rem;
+    font-family: var(--font-sans);
+    font-size: 0.95rem;
+    font-weight: 300;
+    line-height: 1.55;
+    color: #5f5f5b;
+    max-width: 40ch;
+  }
+
+  .steps--dark .step {
+    border-top-color: rgba(244, 242, 236, 0.12);
+  }
+  .steps--dark .step__text {
+    color: rgba(244, 242, 236, 0.62);
+  }
+
+  @media (min-width: 640px) {
+    .steps {
+      grid-template-columns: repeat(2, 1fr);
+      column-gap: 3rem;
+    }
+  }
+  @media (min-width: 1024px) {
+    .steps {
+      grid-template-columns: repeat(3, 1fr);
+    }
+  }
+</style>

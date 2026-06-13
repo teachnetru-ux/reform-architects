@@ -1,0 +1,77 @@
+---
+/**
+ * Сигнатурная интеракция — плашки сегментов с перехватом фона.
+ * Поведение (десктоп): активная расширяется, остальные сужаются и уходят
+ * в монохром/затемнение. На тач/мобиле — вертикальный стек, фон виден без
+ * ховера. prefers-reduced-motion — всё статично (см. global.css).
+ */
+import { segments } from '../data/site.js';
+import { withBase } from '../lib/img.js';
+import Figure from './Figure.astro';
+---
+
+<nav class="segments" aria-label="Чем мы занимаемся">
+  {
+    segments.map((seg, i) => (
+      <a class="segment" href={withBase(seg.href)}>
+        <Figure name={seg.image} alt={`${seg.label} — Reform Architects`} fill={true} />
+        <span class="segment__shade" aria-hidden="true" />
+        <span class="segment__content">
+          <span class="eyebrow segment__index">{`0${i + 1}`}</span>
+          <span class="segment__title">{seg.label}</span>
+          <span class="segment__text">
+            {seg.text}
+            {seg.note && <em class="segment__note"> {seg.note}</em>}
+          </span>
+          <span class="segment__cta">
+            Смотреть<span class="arr" aria-hidden="true"> →</span>
+          </span>
+        </span>
+      </a>
+    ))
+  }
+</nav>
+
+<style>
+  .segment__index {
+    display: block;
+    color: rgba(244, 242, 236, 0.62);
+    margin-bottom: 0.75rem;
+  }
+  .segment__title {
+    display: block;
+    font-family: var(--font-serif);
+    font-size: clamp(1.5rem, 1.2rem + 1.3vw, 2rem);
+    line-height: 1.06;
+  }
+  .segment__text {
+    display: block;
+    margin-top: 0.65rem;
+    max-width: 34ch;
+    font-family: var(--font-sans);
+    font-size: 0.9375rem;
+    font-weight: 300;
+    line-height: 1.5;
+    color: rgba(244, 242, 236, 0.84);
+  }
+  .segment__note {
+    color: rgba(244, 242, 236, 0.62);
+    font-style: italic;
+  }
+  .segment__cta {
+    display: inline-flex;
+    align-items: center;
+    margin-top: 1.1rem;
+    font-family: var(--font-sans);
+    font-size: 0.6875rem;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+  }
+  .segment__cta .arr {
+    transition: transform 0.4s cubic-bezier(0.22, 1, 0.36, 1);
+  }
+  .segment:hover .segment__cta .arr,
+  .segment:focus-visible .segment__cta .arr {
+    transform: translateX(5px);
+  }
+</style>

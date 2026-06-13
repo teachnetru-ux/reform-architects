@@ -1,0 +1,134 @@
+---
+import '../styles/fonts.css';
+import '../styles/global.css';
+import Header from './Header.astro';
+import Footer from './Footer.astro';
+import CookieBanner from './CookieBanner.astro';
+import { site } from '../data/site.js';
+import { resolveImage, withBase } from '../lib/img.js';
+
+interface Props {
+  title: string;
+  description: string;
+  ogImage?: string;
+  headerTransparent?: boolean;
+  noindex?: boolean;
+}
+
+const {
+  title,
+  description,
+  ogImage = 'og-default',
+  headerTransparent = false,
+  noindex = false,
+} = Astro.props;
+
+const fullTitle = title === site.name ? `${site.name} — ${site.tagline}` : `${title} — ${site.name}`;
+const canonical = new URL(Astro.url.pathname, Astro.site).href;
+const ogImg = new URL(resolveImage(ogImage).src, Astro.site).href;
+
+const orgLd = {
+  '@context': 'https://schema.org',
+  '@type': 'Organization',
+  name: site.name,
+  url: Astro.site?.href,
+  email: site.email,
+  telephone: site.phone,
+  foundingDate: String(site.established),
+  description:
+    'Архитектурное бюро полного цикла: дома, резиденции и интерьеры — от проекта до реализации в едином контуре ответственности.',
+  logo: new URL(withBase('/full-logo.png'), Astro.site).href,
+};
+---
+
+<!doctype html>
+<html lang="ru">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>{fullTitle}</title>
+    <meta name="description" content={description} />
+    <link rel="canonical" href={canonical} />
+    {noindex && <meta name="robots" content="noindex, nofollow" />}
+    <meta name="theme-color" content="#141414" />
+    <link rel="icon" href={withBase('/favicon.svg')} type="image/svg+xml" />
+    <link rel="apple-touch-icon" href={withBase('/full-logo.png')} />
+
+    <!-- OpenGraph -->
+    <meta property="og:type" content="website" />
+    <meta property="og:site_name" content={site.name} />
+    <meta property="og:locale" content="ru_RU" />
+    <meta property="og:title" content={fullTitle} />
+    <meta property="og:description" content={description} />
+    <meta property="og:url" content={canonical} />
+    <meta property="og:image" content={ogImg} />
+    <meta property="og:image:width" content="1200" />
+    <meta property="og:image:height" content="630" />
+
+    <!-- Twitter -->
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content={fullTitle} />
+    <meta name="twitter:description" content={description} />
+    <meta name="twitter:image" content={ogImg} />
+
+    <!-- Fonts (dev: Google-аналоги; своп на лицензионные — см. fonts.css) -->
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      rel="stylesheet"
+      href="https://fonts.googleapis.com/css2?family=Baskervville:ital@0;1&family=Jost:wght@300;400;500&display=swap"
+    />
+
+    <script type="application/ld+json" set:html={JSON.stringify(orgLd)} />
+
+    <script is:inline>
+      document.documentElement.classList.add('js');
+    </script>
+  </head>
+  <body>
+    <a href="#main" class="skip-link">К содержимому</a>
+    <Header transparent={headerTransparent} />
+    <main id="main">
+      <slot />
+    </main>
+    <Footer />
+    <CookieBanner />
+
+    <script>
+      // Reveal на скролле — с уважением к prefers-reduced-motion
+      const els = document.querySelectorAll('[data-reveal]');
+      const reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+      if (!('IntersectionObserver' in window) || reduce) {
+        els.forEach((el) => el.classList.add('is-visible'));
+      } else {
+        const io = new IntersectionObserver(
+          (entries) => {
+            for (const e of entries) {
+              if (e.isIntersecting) {
+                e.target.classList.add('is-visible');
+                io.unobserve(e.target);
+              }
+            }
+          },
+          { rootMargin: '0px 0px -8% 0px', threshold: 0.12 },
+        );
+        els.forEach((el) => io.observe(el));
+      }
+
+      // Формы: демо-режим (нет endpoint) — показываем подтверждение без отправки
+      document.querySelectorAll('form[data-demo]').forEach((form) => {
+        form.addEventListener('submit', (e) => {
+          if (!(form instanceof HTMLFormElement) || !form.checkValidity()) return;
+          e.preventDefault();
+          const body = form.querySelector('[data-form-body]');
+          const ok = form.querySelector('[data-form-success]');
+          if (body) body.setAttribute('hidden', '');
+          if (ok instanceof HTMLElement) {
+            ok.removeAttribute('hidden');
+            ok.focus();
+          }
+        });
+      });
+    </script>
+  </body>
+</html>

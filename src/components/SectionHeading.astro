@@ -1,0 +1,26 @@
+---
+interface Props {
+  eyebrow?: string;
+  title: string;
+  lead?: string;
+  align?: 'left' | 'center';
+  tone?: 'light' | 'dark';
+  as?: 'h1' | 'h2';
+}
+
+const { eyebrow, title, lead, align = 'left', tone = 'light', as = 'h2' } = Astro.props;
+const Tag = as;
+const muted = tone === 'dark' ? 'text-muted-dark' : 'text-muted-light';
+---
+
+<div class:list={['max-w-3xl', align === 'center' && 'mx-auto text-center']} data-reveal>
+  {eyebrow && <p class:list={['eyebrow mb-5', muted]}>{eyebrow}</p>}
+  <Tag class="text-h2">{title}</Tag>
+  {
+    lead && (
+      <p class:list={['mt-5 text-lead font-light max-w-prose', muted, align === 'center' && 'mx-auto']}>
+        {lead}
+      </p>
+    )
+  }
+</div>

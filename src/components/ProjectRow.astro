@@ -1,0 +1,152 @@
+---
+/**
+ * Редакционная строка проекта (структура Lines):
+ * крупный тайтл + мета (капс) + строка-идея (если есть) + тег категории,
+ * ниже — крупное фото; строки разделены тонкой линией.
+ */
+import Figure from './Figure.astro';
+import { withBase } from '../lib/img.js';
+
+interface Props {
+  project: any;
+  index: number;
+  eager?: boolean;
+}
+const { project: p, index, eager = false } = Astro.props;
+const meta = [p.type, p.area, p.year, p.status].filter(Boolean).join(' · ');
+const num = String(index + 1).padStart(2, '0');
+---
+
+<a class="prow" href={withBase(`/projects/${p.slug}/`)} data-reveal>
+  <div class="prow__head">
+    <span class="prow__num">{num}</span>
+    <div class="prow__title-wrap">
+      <h2 class="prow__title">{p.name}</h2>
+      {p.essence && <p class="prow__idea">{p.essence}</p>}
+    </div>
+    <div class="prow__meta-wrap">
+      <span class="prow__tag">{p.type}</span>
+      {(p.area || p.year || p.status) && <span class="prow__meta">{meta}</span>}
+      {p.city && <span class="prow__city">{p.city}</span>}
+    </div>
+    <span class="prow__arrow" aria-hidden="true">→</span>
+  </div>
+  <div class="prow__media">
+    <Figure
+      name={p.cover}
+      alt={`${p.name} — ${p.type}`}
+      ratio="16 / 9"
+      eager={eager}
+      imgClass="prow__img"
+      sizes="(min-width: 1024px) 1180px, 100vw"
+    />
+  </div>
+</a>
+
+<style>
+  .prow {
+    display: block;
+    padding-top: 2.25rem;
+    border-top: 1px solid rgba(20, 20, 20, 0.14);
+  }
+  .prow__head {
+    display: grid;
+    grid-template-columns: auto 1fr auto;
+    grid-template-areas:
+      'num title arrow'
+      'meta meta meta';
+    align-items: start;
+    gap: 0.75rem 1.25rem;
+  }
+  .prow__num {
+    grid-area: num;
+    font-family: var(--font-sans);
+    font-size: 0.6875rem;
+    letter-spacing: 0.16em;
+    color: #6a6a66;
+    padding-top: 0.6rem;
+  }
+  .prow__title-wrap {
+    grid-area: title;
+  }
+  .prow__title {
+    font-size: clamp(1.85rem, 1.3rem + 2.4vw, 2.75rem);
+    line-height: 1.04;
+    transition: opacity 0.3s ease;
+  }
+  .prow__idea {
+    margin-top: 0.65rem;
+    max-width: 52ch;
+    font-family: var(--font-sans);
+    font-size: 0.95rem;
+    font-weight: 300;
+    line-height: 1.55;
+    color: #5f5f5b;
+  }
+  .prow__meta-wrap {
+    grid-area: meta;
+    display: flex;
+    flex-wrap: wrap;
+    align-items: baseline;
+    gap: 0.4rem 1rem;
+  }
+  .prow__tag {
+    font-family: var(--font-sans);
+    font-size: 0.625rem;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: #141414;
+    border: 1px solid rgba(20, 20, 20, 0.2);
+    border-radius: 30px;
+    padding: 0.35rem 0.8rem;
+  }
+  .prow__meta,
+  .prow__city {
+    font-family: var(--font-sans);
+    font-size: 0.6875rem;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: #6a6a66;
+  }
+  .prow__arrow {
+    grid-area: arrow;
+    font-size: 1.5rem;
+    color: #141414;
+    padding-top: 0.3rem;
+    transition: transform 0.4s cubic-bezier(0.22, 1, 0.36, 1);
+  }
+  .prow:hover .prow__arrow {
+    transform: translate(4px, -4px);
+  }
+
+  .prow__media {
+    margin-top: 1.75rem;
+  }
+  .prow :global(.prow__img) {
+    transition: transform 1s cubic-bezier(0.22, 1, 0.36, 1);
+  }
+  .prow:hover :global(.prow__img) {
+    transform: scale(1.025);
+  }
+
+  @media (min-width: 768px) {
+    .prow {
+      padding-top: 2.75rem;
+    }
+    .prow__head {
+      grid-template-columns: auto 1fr auto auto;
+      grid-template-areas: 'num title meta arrow';
+      align-items: center;
+      gap: 2rem;
+    }
+    .prow__meta-wrap {
+      flex-direction: column;
+      align-items: flex-end;
+      gap: 0.5rem;
+      text-align: right;
+    }
+    .prow__idea {
+      margin-top: 0.85rem;
+    }
+  }
+</style>

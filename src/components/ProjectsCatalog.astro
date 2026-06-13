@@ -1,0 +1,57 @@
+---
+/**
+ * Шаблон категорийной страницы каталога: H1 + лид, фильтр-пилюли,
+ * редакционные строки проектов, нижний CTA → форма захвата.
+ */
+import FilterPills from './FilterPills.astro';
+import ProjectRow from './ProjectRow.astro';
+import LeadForm from './LeadForm.astro';
+
+interface Props {
+  category: any;
+  items: any[];
+}
+const { category, items } = Astro.props;
+---
+
+<section class="section section-top">
+  <div class="wrap">
+    <div data-reveal>
+      <p class="eyebrow text-muted-light mb-5">Проекты</p>
+      <h1 class="text-display">{category.title}</h1>
+      <p class="mt-6 text-lead font-light text-muted-light max-w-prose">{category.lead}</p>
+    </div>
+
+    <div class="mt-10 md:mt-12" data-reveal>
+      <FilterPills active={category.key} />
+    </div>
+
+    <div class="catalog">
+      {
+        items.length === 0 ? (
+          <p class="catalog__empty">Проекты этой категории скоро появятся.</p>
+        ) : (
+          items.map((p, i) => <ProjectRow project={p} index={i} eager={i === 0} />)
+        )
+      }
+    </div>
+  </div>
+</section>
+
+<LeadForm subtitle={category.ctaNote} />
+
+<style>
+  .catalog {
+    margin-top: clamp(3rem, 2rem + 4vw, 5rem);
+    display: flex;
+    flex-direction: column;
+    gap: clamp(3.5rem, 2.5rem + 4vw, 6rem);
+  }
+  .catalog__empty {
+    padding-top: 2rem;
+    border-top: 1px solid rgba(20, 20, 20, 0.14);
+    font-family: var(--font-serif);
+    font-size: 1.4rem;
+    color: #6a6a66;
+  }
+</style>

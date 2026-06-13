@@ -1,0 +1,63 @@
+---
+import Figure from './Figure.astro';
+import { withBase } from '../lib/img.js';
+
+interface Props {
+  project: any;
+  eager?: boolean;
+}
+const { project: p, eager = false } = Astro.props;
+const meta = [p.type, p.area, p.year, p.status].filter(Boolean).join(' · ');
+---
+
+<a class="pcard" href={withBase(`/projects/${p.slug}/`)} data-reveal>
+  <Figure
+    name={p.cover}
+    alt={`${p.name} — ${p.type}`}
+    ratio="4 / 5"
+    eager={eager}
+    imgClass="pcard__img"
+    sizes="(min-width: 1024px) 33vw, (min-width: 640px) 50vw, 100vw"
+  />
+  <div class="pcard__body">
+    <h3 class="pcard__title">{p.name}</h3>
+    <p class="pcard__meta">{meta}</p>
+    {p.city && <p class="pcard__city">{p.city}</p>}
+  </div>
+</a>
+
+<style>
+  .pcard {
+    display: block;
+  }
+  .pcard :global(.pcard__img) {
+    transition: transform 0.9s cubic-bezier(0.22, 1, 0.36, 1);
+  }
+  .pcard:hover :global(.pcard__img) {
+    transform: scale(1.04);
+  }
+  .pcard__body {
+    padding-top: 1.1rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0.4rem;
+  }
+  .pcard__title {
+    font-size: clamp(1.6rem, 1.3rem + 1vw, 2rem);
+    line-height: 1.05;
+  }
+  .pcard__meta {
+    font-family: var(--font-sans);
+    font-size: 0.6875rem;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+    color: #6a6a66;
+  }
+  .pcard__city {
+    font-family: var(--font-sans);
+    font-size: 0.6875rem;
+    letter-spacing: 0.1em;
+    color: #6a6a66;
+    opacity: 0.85;
+  }
+</style>
