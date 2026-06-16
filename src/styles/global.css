@@ -162,7 +162,9 @@
 }
 
 /* =================================================================
-   СИГНАТУРНАЯ ИНТЕРАКЦИЯ — плашки сегментов (перехват фона)
+   Плашки сегментов — СТАТИЧНЫЕ (без hover-анимации):
+   ничего не расширяется/сжимается, изображение не масштабируется
+   и не двигается. Десктоп — равные колонки, мобайл — вертикальный стек.
    ================================================================= */
 .segments {
   display: flex;
@@ -188,43 +190,11 @@
   background: linear-gradient(to top, rgba(16, 16, 16, 0.86) 0%, rgba(16, 16, 16, 0.32) 45%, rgba(16, 16, 16, 0.12) 100%);
 }
 .segment__content { position: relative; z-index: 2; padding: clamp(1.25rem, 1rem + 2vw, 2.5rem); width: 100%; }
-.segment .fig__img { transition: filter 0.55s theme('transitionTimingFunction.editorial'); }
 
-/* Десктоп: горизонтальный ряд + перехват фона */
-@media (hover: hover) and (min-width: 768px) {
-  .segments {
-    flex-direction: row;
-    height: clamp(440px, 62vh, 640px);
-  }
-  .segment {
-    transition: flex-grow 0.55s theme('transitionTimingFunction.editorial');
-  }
-  /* при наведении/фокусе внутри ряда — все сужаются и затемняются */
-  .segments:hover .segment,
-  .segments:focus-within .segment {
-    flex-grow: 0.62;
-  }
-  .segments:hover .segment .fig__img,
-  .segments:focus-within .segment .fig__img {
-    filter: grayscale(1) brightness(0.42);
-  }
-  .segments:hover .segment .segment__shade,
-  .segments:focus-within .segment .segment__shade {
-    background: rgba(14, 14, 14, 0.66);
-  }
-  /* активная — расширяется и возвращает цвет */
-  .segments .segment:hover,
-  .segments .segment:focus-visible {
-    flex-grow: 2.5;
-  }
-  .segments .segment:hover .fig__img,
-  .segments .segment:focus-visible .fig__img {
-    filter: none;
-  }
-  .segments .segment:hover .segment__shade,
-  .segments .segment:focus-visible .segment__shade {
-    background: linear-gradient(to top, rgba(16, 16, 16, 0.78) 0%, rgba(16, 16, 16, 0.18) 55%, rgba(16, 16, 16, 0) 100%);
-  }
+/* Десктоп: равные статичные колонки (равная высота, текст не обрезается) */
+@media (min-width: 1024px) {
+  .segments { flex-direction: row; align-items: stretch; }
+  .segment { min-height: 520px; }
 }
 
 /* =================================================================
@@ -251,12 +221,6 @@ html.js [data-reveal].is-visible { opacity: 1; transform: none; }
     scroll-behavior: auto !important;
   }
   html.js [data-reveal] { opacity: 1 !important; transform: none !important; }
-  /* плашки сегментов — статичны, все видимы */
-  .segments:hover .segment,
-  .segments:focus-within .segment,
-  .segments .segment:hover,
-  .segments .segment:focus-visible { flex-grow: 1 !important; }
-  .segments .segment .fig__img { filter: none !important; }
 }
 
 /* =================================================================

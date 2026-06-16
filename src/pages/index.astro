@@ -50,7 +50,9 @@ const description =
 
   {/* ── Блок 2 — Сегментация ──────────────────────────────────── */}
   <section aria-labelledby="segments-title">
-    <h2 id="segments-title" class="sr-only">Сегменты бюро</h2>
+    <div class="wrap segments-intro">
+      <SectionHeading id="segments-title" eyebrow="Направления" title="Ваш сценарий проекта" />
+    </div>
     <SegmentCards />
   </section>
 
@@ -185,6 +187,10 @@ const description =
     clip: rect(0, 0, 0, 0);
     white-space: nowrap;
     border: 0;
+  }
+
+  .segments-intro {
+    padding-block: clamp(4rem, 3rem + 5vw, 7rem) clamp(2rem, 1.5rem + 3vw, 3.25rem);
   }
 
   .hero {

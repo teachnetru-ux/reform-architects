@@ -1,9 +1,7 @@
 ---
 /**
- * Сигнатурная интеракция — плашки сегментов с перехватом фона.
- * Поведение (десктоп): активная расширяется, остальные сужаются и уходят
- * в монохром/затемнение. На тач/мобиле — вертикальный стек, фон виден без
- * ховера. prefers-reduced-motion — всё статично (см. global.css).
+ * Плашки сегментов — статичные. На десктопе равные колонки, на мобайле
+ * вертикальный стек; hover-анимации нет (раскладка/изображение не меняются).
  */
 import { segments } from '../data/site.js';
 import { withBase } from '../lib/img.js';
@@ -67,12 +65,5 @@ import Figure from './Figure.astro';
     font-size: 0.6875rem;
     letter-spacing: 0.2em;
     text-transform: uppercase;
-  }
-  .segment__cta .arr {
-    transition: transform 0.4s cubic-bezier(0.22, 1, 0.36, 1);
-  }
-  .segment:hover .segment__cta .arr,
-  .segment:focus-visible .segment__cta .arr {
-    transform: translateX(5px);
   }
 </style>
