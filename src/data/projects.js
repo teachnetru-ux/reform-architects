@@ -1,32 +1,64 @@
 /**
  * Reform Architects — проекты и категории.
  *
- * ВАЖНО (по брифу — ничего не выдумываем):
- *  • Эталонная мета (площадь · год · статус · город) в копирайте НЕ задана —
- *    это «открытая задача» (эталонный список проектов). Поля ниже = null и
- *    рендерятся с graceful-деградацией (пустые просто не показываются).
- *    Когда придёт таблица — заполняем здесь, код менять не нужно.
- *  • Строка-идея/эссенция/контекст есть только у Luciano (пример в брифе).
- *    У остальных не сочиняем — поля null, ряд остаётся в стиле Lines.
- *  • Изображения — слоты (см. resolveImage): кладёте растр с тем же именем —
- *    заглушка заменяется автоматически.
+ * Единая структура у ВСЕХ проектов (по образцу Luciano 74): эссенция,
+ * контекст (Задача / Ограничения / Решение), ключевая идея + герой-приём.
+ * Где реального текста ещё нет — единый плейсхолдер PLACEHOLDER, чтобы потом
+ * легко найти и заменить.
+ *
+ *  • Мета (площадь · год · статус · город) — пока не задана (null), не выводится.
+ *  • Изображения — слоты (см. resolveImage): кладёте растр с тем же именем в
+ *    public/img/ — заглушка заменяется автоматически.
+ *  • `featured: true` — проект попадает в избранный грид на главной
+ *    (грид главной = только избранные; полный список — в каталоге).
  */
 
 /** @typedef {'apartments'|'houses'|'restaurants'} CategoryKey */
 
-export const projects = [
-  {
-    slug: 'luciano',
-    name: 'Luciano',
-    type: 'Интерьер',
-    category: 'apartments',
-    order: 1,
-    // мета (источник истины — эталонный список; пока не задано)
+/** Единый плейсхолдер для незаполненного текста (легко найти/заменить). */
+export const PLACEHOLDER = '[Текст будет добавлен]';
+
+/**
+ * Сборка проекта с единой структурой и плейсхолдерами по умолчанию.
+ * `data` перекрывает дефолты; cover / heroMedia / gallery выводятся из slug.
+ */
+function project(data) {
+  const { slug, galleryCount = 3, gallery, ...rest } = data;
+  const autoGallery = Array.from({ length: galleryCount }, (_, i) => ({
+    name: `${slug}-${String(i + 1).padStart(2, '0')}`,
+    caption: null,
+  }));
+  return {
+    slug,
     area: null,
     year: null,
     status: null,
     city: null,
-    // строка-идея для редакционного ряда (есть только здесь)
+    essence: PLACEHOLDER,
+    context: { task: PLACEHOLDER, limits: PLACEHOLDER, solution: PLACEHOLDER },
+    idea: PLACEHOLDER,
+    hero: PLACEHOLDER,
+    featured: false,
+    ...rest,
+    cover: `${slug}-cover`,
+    heroMedia: `${slug}-hero`,
+    gallery: gallery ?? autoGallery,
+  };
+}
+
+export const projects = [
+  // Единственный проект с реальным текстом-примером (бывш. Luciano).
+  {
+    slug: 'luciano-74',
+    name: 'Luciano 74',
+    type: 'Интерьер',
+    category: 'apartments',
+    order: 1,
+    featured: true,
+    area: null,
+    year: null,
+    status: null,
+    city: null,
     essence:
       'Спокойный интерьер для постоянной жизни: архитектурная логика, свет и тактильные материалы вместо декора ради декора.',
     context: {
@@ -38,126 +70,65 @@ export const projects = [
     idea:
       'Нейтральная база и тактильные материалы — камень, дерево, текстиль; общественная зона открытая и цельная, приватная — тише; акцент на пропорциях и чистоте линий.',
     hero: 'Поворотная стеклянная перегородка на 360° в мастер-зоне.',
-    cover: 'luciano-cover',
-    heroMedia: 'luciano-hero',
+    cover: 'luciano-74-cover',
+    heroMedia: 'luciano-74-hero',
     gallery: [
-      { name: 'luciano-01', caption: 'Общественная зона: открытая и цельная' },
-      { name: 'luciano-02', caption: 'Тактильные материалы: камень, дерево, текстиль' },
-      { name: 'luciano-03', caption: 'Приватная зона: тише и собраннее' },
-      { name: 'luciano-04', caption: 'Мастер-зона: поворотная стеклянная перегородка' },
+      { name: 'luciano-74-01', caption: 'Общественная зона: открытая и цельная' },
+      { name: 'luciano-74-02', caption: 'Тактильные материалы: камень, дерево, текстиль' },
+      { name: 'luciano-74-03', caption: 'Приватная зона: тише и собраннее' },
+      { name: 'luciano-74-04', caption: 'Мастер-зона: поворотная стеклянная перегородка' },
     ],
   },
-  {
-    slug: 'podluzhnaya',
-    name: 'Апартаменты Подлужная',
+
+  // Остальные текущие проекты — единая структура, текст-плейсхолдеры.
+  project({
+    slug: 'sheremetyevskaya',
+    name: 'Апартаменты Шереметьевская',
     type: 'Интерьер',
     category: 'apartments',
     order: 2,
-    area: null,
-    year: null,
-    status: null,
-    city: null,
-    essence: null,
-    context: null,
-    idea: null,
-    hero: null,
-    cover: 'podluzhnaya-cover',
-    heroMedia: 'podluzhnaya-hero',
-    gallery: [
-      { name: 'podluzhnaya-01', caption: null },
-      { name: 'podluzhnaya-02', caption: null },
-      { name: 'podluzhnaya-03', caption: null },
-    ],
-  },
-  {
+    featured: true,
+  }),
+  project({
     slug: 'porto',
     name: 'Porto',
     type: 'Коммерция',
     category: 'restaurants',
     order: 3,
-    area: null,
-    year: null,
-    status: null,
+    featured: true,
     city: 'Франция',
-    essence: null,
-    context: null,
-    idea: null,
-    hero: null,
-    cover: 'porto-cover',
-    heroMedia: 'porto-hero',
-    feature: true, // «показать крупно и солидно»
-    gallery: [
-      { name: 'porto-01', caption: null },
-      { name: 'porto-02', caption: null },
-      { name: 'porto-03', caption: null },
-    ],
-  },
-  {
+  }),
+  project({
     slug: 'bereg-terrace',
     name: 'Bereg Terrace',
     type: 'Интерьер',
     category: 'apartments',
     order: 4,
-    area: null,
-    year: null,
-    status: null,
-    city: null,
-    essence: null,
-    context: null,
-    idea: null,
-    hero: null,
-    cover: 'bereg-terrace-cover',
-    heroMedia: 'bereg-terrace-hero',
-    gallery: [
-      { name: 'bereg-terrace-01', caption: null },
-      { name: 'bereg-terrace-02', caption: null },
-      { name: 'bereg-terrace-03', caption: null },
-    ],
-  },
-  {
+    featured: true,
+  }),
+  project({
     slug: 'sornaar-house',
     name: 'Sornaar House',
     type: 'Архитектура',
     category: 'houses',
     order: 5,
-    area: null,
-    year: null,
-    status: null,
-    city: null,
-    essence: null,
-    context: null,
-    idea: null,
-    hero: null,
-    cover: 'sornaar-house-cover',
-    heroMedia: 'sornaar-house-hero',
-    gallery: [
-      { name: 'sornaar-house-01', caption: null },
-      { name: 'sornaar-house-02', caption: null },
-      { name: 'sornaar-house-03', caption: null },
-    ],
-  },
-  {
+    featured: true,
+  }),
+  project({
     slug: 'palandia',
     name: 'Palandia',
     type: 'Архитектура',
     category: 'houses',
     order: 6,
-    area: null,
-    year: null,
-    status: null,
-    city: null,
-    essence: null,
-    context: null,
-    idea: null,
-    hero: null,
-    cover: 'palandia-cover',
-    heroMedia: 'palandia-hero',
-    gallery: [
-      { name: 'palandia-01', caption: null },
-      { name: 'palandia-02', caption: null },
-      { name: 'palandia-03', caption: null },
-    ],
-  },
+    featured: true,
+  }),
+
+  // Новые проекты (Интерьер) — в общий каталог; на главную не выносим.
+  project({ slug: 'altyn-yar', name: 'Апартаменты Алтын Яр', type: 'Интерьер', category: 'apartments', order: 7 }),
+  project({ slug: 'luciano-54', name: 'Luciano 54', type: 'Интерьер', category: 'apartments', order: 8 }),
+  project({ slug: 'luciano-88', name: 'Luciano 88', type: 'Интерьер', category: 'apartments', order: 9 }),
+  project({ slug: 'moy-ritm', name: 'Апартаменты Мой Ритм', type: 'Интерьер', category: 'apartments', order: 10 }),
+  project({ slug: 'sovushki', name: 'Совушки', type: 'Интерьер', category: 'apartments', order: 11 }),
 ];
 
 /** Категории каталога (H1 + лид + нижний CTA). Тексты — из копирайта. */
@@ -209,11 +180,14 @@ export const projectTabs = [
   { key: 'all', label: 'Все проекты', href: '/projects/' },
 ];
 
-/** Витрина главной — строго по порядку из копирайта (order 1…6). */
-export const showcase = [...projects].sort((a, b) => a.order - b.order);
+/** Избранное для главной (грид главной = только избранные проекты). */
+export const showcase = projects.filter((p) => p.featured).sort((a, b) => a.order - b.order);
+
+/** Полный каталог — все проекты по порядку. */
+export const allProjects = [...projects].sort((a, b) => a.order - b.order);
 
 export const getByCategory = (key) =>
-  key === 'all' ? showcase : showcase.filter((p) => p.category === key);
+  key === 'all' ? allProjects : allProjects.filter((p) => p.category === key);
 
 export const getProject = (slug) => projects.find((p) => p.slug === slug);
 

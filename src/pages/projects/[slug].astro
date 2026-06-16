@@ -4,17 +4,18 @@ import Figure from '../../components/Figure.astro';
 import ProjectCard from '../../components/ProjectCard.astro';
 import LeadForm from '../../components/LeadForm.astro';
 import { withBase } from '../../lib/img.js';
-import { projects, projectScope, showcase } from '../../data/projects.js';
+import { projects, projectScope, allProjects, PLACEHOLDER } from '../../data/projects.js';
 
 export function getStaticPaths() {
   return projects.map((p) => ({ params: { slug: p.slug }, props: { project: p } }));
 }
 
 const { project: p } = Astro.props;
-const related = showcase.filter((x) => x.slug !== p.slug).slice(0, 3);
+const related = allProjects.filter((x) => x.slug !== p.slug).slice(0, 3);
 const description =
-  p.essence ||
-  `${p.name} — ${p.type}. Проект Reform Architects: от концепции до реализации в едином контуре ответственности.`;
+  p.essence && p.essence !== PLACEHOLDER
+    ? p.essence
+    : `${p.name} — ${p.type}. Проект Reform Architects: от концепции до реализации в едином контуре ответственности.`;
 
 const gallery = p.gallery || [];
 const firstBlock = gallery.slice(0, 2);
