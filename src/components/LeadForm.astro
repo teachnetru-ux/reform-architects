@@ -4,7 +4,6 @@
  * CTA «Обсудить Ваш проект». Всегда на светлой поверхности.
  */
 import { site } from '../data/site.js';
-import { withBase } from '../lib/img.js';
 
 interface Props {
   id?: string;
@@ -54,6 +53,10 @@ const uid = Math.random().toString(36).slice(2, 8);
               type="tel"
               inputmode="tel"
               autocomplete="tel"
+              placeholder="+7 (___) ___-__-__"
+              pattern="\+7 \(\d{3}\) \d{3}-\d{2}-\d{2}"
+              title="Введите номер в формате +7 (999) 123-45-67"
+              data-phone-mask
               required
             />
           </div>
@@ -70,8 +73,11 @@ const uid = Math.random().toString(36).slice(2, 8);
           <label class="consent">
             <input type="checkbox" name="consent" required />
             <span>
-              Я согласен на обработку персональных данных согласно
-              <a href={withBase('/legal/consent/')}>политике</a>.
+              Я даю согласие на обработку
+              <a
+                href="https://teachnetru-ux.github.io/reform-architects/legal/consent/"
+                target="_blank"
+                rel="noopener noreferrer">персональных данных</a>
             </span>
           </label>
 
