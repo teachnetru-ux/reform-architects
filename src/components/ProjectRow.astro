@@ -35,10 +35,10 @@ const num = String(index + 1).padStart(2, '0');
     <Figure
       name={p.cover}
       alt={`${p.name} — ${p.type}`}
-      ratio="16 / 9"
+      ratio="4 / 5"
       eager={eager}
       imgClass="prow__img"
-      sizes="(min-width: 1024px) 1180px, 100vw"
+      sizes="(min-width: 768px) 520px, 100vw"
     />
   </div>
 </a>
@@ -148,6 +148,10 @@ const num = String(index + 1).padStart(2, '0');
     }
     .prow__idea {
       margin-top: 0.85rem;
+    }
+    /* 4:5 на десктопе ограничиваем по ширине, чтобы портрет не был гигантским */
+    .prow__media {
+      max-width: 520px;
     }
   }
 </style>
