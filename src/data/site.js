@@ -29,7 +29,6 @@ export const site = {
   nav: [
     { label: 'Проекты', href: '/projects/' },
     { label: 'Девелоперам', href: '/developers/' },
-    { label: 'Бюро', href: '/bureau/' },
     { label: 'Контакты', href: '#contact' },
   ],
 
@@ -38,6 +37,20 @@ export const site = {
     { label: 'Согласие на обработку данных', href: '/legal/consent/' },
     { label: 'Политика использования cookie', href: '/legal/cookie/' },
   ],
+
+  /** Мессенджеры и поддержка (внешние ссылки). */
+  chats: [
+    { label: 'Telegram', href: 'https://t.me/reform_architects' },
+    { label: 'МАКС', href: 'https://t.me/reform_architects' },
+  ],
+  support: {
+    label: 'Чат-поддержки',
+    href: 'https://t.me/reform_architect',
+    hours: 'ежедневно с 9:00 до 21:00',
+  },
+
+  /** Реквизиты (мелкий приглушённый блок внизу подвала). */
+  legalEntity: ['ИП Закиров Раиль Каримович', 'ОГРНИП: 321169000203676', 'ИНН: 165058083808'],
 };
 
 /**

@@ -28,7 +28,21 @@ import { withBase } from '../lib/img.js';
         <p class="eyebrow footer-col__title">Контакты</p>
         <a href={`mailto:${site.email}`} class="footer-link">{site.email}</a>
         <a href={`tel:${site.phoneHref}`} class="footer-link">{site.phone}</a>
-        <span class="footer-link footer-link--static">{site.domain}</span>
+        {
+          site.chats.map((c) => (
+            <a href={c.href} class="footer-link" target="_blank" rel="noopener noreferrer">
+              {c.label}
+            </a>
+          ))
+        }
+        <div class="footer-support">
+          <a
+            href={site.support.href}
+            class="footer-link"
+            target="_blank"
+            rel="noopener noreferrer">{site.support.label}</a>
+          <span class="footer-support__hours">{site.support.hours}</span>
+        </div>
       </div>
     </div>
 
@@ -39,6 +53,10 @@ import { withBase } from '../lib/img.js';
       <nav class="footer-legal" aria-label="Правовые документы">
         {site.legal.map((l) => <a href={withBase(l.href)} class="footer-legal__link">{l.label}</a>)}
       </nav>
+    </div>
+
+    <div class="footer-requisites">
+      {site.legalEntity.map((line) => <span>{line}</span>)}
     </div>
   </div>
 </footer>
@@ -90,11 +108,16 @@ import { withBase } from '../lib/img.js';
   .footer-link:hover {
     color: #f4f2ec;
   }
-  .footer-link--static {
-    cursor: default;
+  .footer-support {
+    display: flex;
+    flex-direction: column;
+    gap: 0.2rem;
   }
-  .footer-link--static:hover {
-    color: rgba(244, 242, 236, 0.78);
+  .footer-support__hours {
+    font-family: var(--font-sans);
+    font-size: 0.75rem;
+    line-height: 1.4;
+    color: rgba(244, 242, 236, 0.4);
   }
 
   .footer-rule {
@@ -125,6 +148,17 @@ import { withBase } from '../lib/img.js';
   }
   .footer-legal__link:hover {
     color: #f4f2ec;
+  }
+
+  .footer-requisites {
+    margin-top: 1.75rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0.15rem;
+    font-family: var(--font-sans);
+    font-size: 0.7rem;
+    line-height: 1.5;
+    color: rgba(244, 242, 236, 0.4);
   }
 
   @media (min-width: 768px) {
