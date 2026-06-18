@@ -1,8 +1,9 @@
 ---
 /**
- * Редакционная строка проекта (структура Lines):
- * крупный тайтл + мета (капс) + строка-идея (если есть) + тег категории,
- * ниже — крупное фото; строки разделены тонкой линией.
+ * Редакционная строка проекта (структура Lines).
+ * Десктоп (≥1024): композиция «фото слева (4:5, ~40%) — текст справа,
+ * по вертикали по центру; высота строки = высота фото».
+ * Мобайл/планшет (<1024): стек — фото сверху, текст под ним.
  */
 import Figure from './Figure.astro';
 import { withBase } from '../lib/img.js';
@@ -13,24 +14,11 @@ interface Props {
   eager?: boolean;
 }
 const { project: p, index, eager = false } = Astro.props;
-const meta = [p.type, p.area, p.year, p.status].filter(Boolean).join(' · ');
+const meta = [p.area, p.year, p.status].filter(Boolean).join(' · ');
 const num = String(index + 1).padStart(2, '0');
 ---
 
 <a class="prow" href={withBase(`/projects/${p.slug}/`)} data-reveal>
-  <div class="prow__head">
-    <span class="prow__num">{num}</span>
-    <div class="prow__title-wrap">
-      <h2 class="prow__title">{p.name}</h2>
-      {p.essence && <p class="prow__idea">{p.essence}</p>}
-    </div>
-    <div class="prow__meta-wrap">
-      <span class="prow__tag">{p.type}</span>
-      {(p.area || p.year || p.status) && <span class="prow__meta">{meta}</span>}
-      {p.city && <span class="prow__city">{p.city}</span>}
-    </div>
-    <span class="prow__arrow" aria-hidden="true">→</span>
-  </div>
   <div class="prow__media">
     <Figure
       name={p.cover}
@@ -38,8 +26,20 @@ const num = String(index + 1).padStart(2, '0');
       ratio="4 / 5"
       eager={eager}
       imgClass="prow__img"
-      sizes="(min-width: 768px) 520px, 100vw"
+      sizes="(min-width: 1024px) 40vw, 100vw"
     />
+  </div>
+
+  <div class="prow__body">
+    <span class="prow__num">{num}</span>
+    <h2 class="prow__title">{p.name}</h2>
+    {p.essence && <p class="prow__idea">{p.essence}</p>}
+    <div class="prow__meta-wrap">
+      <span class="prow__tag">{p.type}</span>
+      {p.city && <span class="prow__loc">{p.city}</span>}
+      {meta && <span class="prow__meta">{meta}</span>}
+    </div>
+    <span class="prow__cta">Смотреть<span class="arr" aria-hidden="true"> →</span></span>
   </div>
 </a>
 
@@ -49,35 +49,37 @@ const num = String(index + 1).padStart(2, '0');
     padding-top: 2.25rem;
     border-top: 1px solid rgba(20, 20, 20, 0.14);
   }
-  .prow__head {
-    display: grid;
-    grid-template-columns: auto 1fr auto;
-    grid-template-areas:
-      'num title arrow'
-      'meta meta meta';
-    align-items: start;
-    gap: 0.75rem 1.25rem;
+
+  /* Медиа */
+  .prow :global(.prow__img) {
+    transition: transform 1s cubic-bezier(0.22, 1, 0.36, 1);
+  }
+  .prow:hover :global(.prow__img) {
+    transform: scale(1.025);
+  }
+
+  /* Текстовая колонка */
+  .prow__body {
+    margin-top: 1.5rem;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
   }
   .prow__num {
-    grid-area: num;
     font-family: var(--font-sans);
     font-size: 0.6875rem;
     letter-spacing: 0.16em;
     color: #6a6a66;
-    padding-top: 0.6rem;
-  }
-  .prow__title-wrap {
-    grid-area: title;
   }
   .prow__title {
+    margin-top: 0.6rem;
     font-size: clamp(1.85rem, 1.3rem + 2.4vw, 2.75rem);
     font-weight: 400;
     line-height: 1.04;
-    transition: opacity 0.3s ease;
   }
   .prow__idea {
-    margin-top: 0.65rem;
-    max-width: 52ch;
+    margin-top: 0.75rem;
+    max-width: 440px;
     font-family: var(--font-sans);
     font-size: 0.95rem;
     font-weight: 300;
@@ -85,11 +87,11 @@ const num = String(index + 1).padStart(2, '0');
     color: #5f5f5b;
   }
   .prow__meta-wrap {
-    grid-area: meta;
+    margin-top: 1.1rem;
     display: flex;
     flex-wrap: wrap;
-    align-items: baseline;
-    gap: 0.4rem 1rem;
+    align-items: center;
+    gap: 0.5rem 0.9rem;
   }
   .prow__tag {
     font-family: var(--font-sans);
@@ -101,57 +103,47 @@ const num = String(index + 1).padStart(2, '0');
     border-radius: 30px;
     padding: 0.35rem 0.8rem;
   }
-  .prow__meta,
-  .prow__city {
+  .prow__loc,
+  .prow__meta {
     font-family: var(--font-sans);
     font-size: 0.6875rem;
     letter-spacing: 0.14em;
     text-transform: uppercase;
     color: #6a6a66;
   }
-  .prow__arrow {
-    grid-area: arrow;
-    font-size: 1.5rem;
+  .prow__cta {
+    margin-top: 1.35rem;
+    display: inline-flex;
+    align-items: center;
+    font-family: var(--font-sans);
+    font-size: 0.6875rem;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
     color: #141414;
-    padding-top: 0.3rem;
+  }
+  .prow__cta .arr {
     transition: transform 0.4s cubic-bezier(0.22, 1, 0.36, 1);
   }
-  .prow:hover .prow__arrow {
-    transform: translate(4px, -4px);
+  .prow:hover .prow__cta .arr {
+    transform: translateX(5px);
   }
 
-  .prow__media {
-    margin-top: 1.75rem;
-  }
-  .prow :global(.prow__img) {
-    transition: transform 1s cubic-bezier(0.22, 1, 0.36, 1);
-  }
-  .prow:hover :global(.prow__img) {
-    transform: scale(1.025);
-  }
-
-  @media (min-width: 768px) {
+  /* Десктоп: фото слева (~40%), текст справа по центру по вертикали */
+  @media (min-width: 1024px) {
     .prow {
+      display: flex;
+      align-items: center;
+      gap: clamp(2.5rem, 4vw, 5rem);
       padding-top: 2.75rem;
     }
-    .prow__head {
-      grid-template-columns: auto 1fr auto auto;
-      grid-template-areas: 'num title meta arrow';
-      align-items: center;
-      gap: 2rem;
-    }
-    .prow__meta-wrap {
-      flex-direction: column;
-      align-items: flex-end;
-      gap: 0.5rem;
-      text-align: right;
-    }
-    .prow__idea {
-      margin-top: 0.85rem;
-    }
-    /* 4:5 на десктопе ограничиваем по ширине, чтобы портрет не был гигантским */
     .prow__media {
-      max-width: 520px;
+      flex: 0 0 40%;
+      max-width: 40%;
+    }
+    .prow__body {
+      margin-top: 0;
+      flex: 1 1 auto;
+      max-width: 440px;
     }
   }
 </style>
