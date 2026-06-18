@@ -32,14 +32,26 @@ const { transparent = false } = Astro.props;
       </button>
     </div>
   </div>
-
-  <div class="mobile-menu" id="mobile-menu" data-menu hidden>
-    <nav class="mobile-menu__nav" aria-label="Мобильная навигация">
-      {site.nav.map((item) => <a href={withBase(item.href)} class="mobile-menu__link">{item.label}</a>)}
-      <a href={withBase('#contact')} class="btn btn--light mobile-menu__cta">{site.cta.private}</a>
-    </nav>
-  </div>
 </header>
+
+{/*
+  Полноэкранный оверлей вынесен ИЗ <header> намеренно: у шапки есть
+  backdrop-filter, который делает её containing block для position:fixed
+  потомков — из-за этого меню «уезжало»/обрезалось после скролла.
+  Как сосед body оверлей всегда позиционируется от вьюпорта.
+*/}
+<div class="mobile-menu" id="mobile-menu" data-menu hidden>
+  <div class="mobile-menu__bar">
+    <a href={withBase('/')} class="mobile-menu__brand">reform architects</a>
+    <button type="button" class="mobile-menu__close" aria-label="Закрыть меню" data-menu-close>
+      <span></span><span></span>
+    </button>
+  </div>
+  <nav class="mobile-menu__nav" aria-label="Мобильная навигация">
+    {site.nav.map((item) => <a href={withBase(item.href)} class="mobile-menu__link">{item.label}</a>)}
+    <a href={withBase('#contact')} class="btn btn--light mobile-menu__cta">{site.cta.private}</a>
+  </nav>
+</div>
 
 <style>
   .site-header {
@@ -140,35 +152,70 @@ const { transparent = false } = Astro.props;
     width: 24px;
     height: 1.5px;
     background: currentColor;
-    transition: transform 0.3s ease, opacity 0.3s ease;
-  }
-  .burger[aria-expanded='true'] span:first-child {
-    transform: translateY(3.25px) rotate(45deg);
-  }
-  .burger[aria-expanded='true'] span:last-child {
-    transform: translateY(-3.25px) rotate(-45deg);
   }
 
+  /* ── Полноэкранный мобильный оверлей ── */
   .mobile-menu {
     position: fixed;
-    inset: var(--header-h) 0 0 0;
-    z-index: 49;
-    background: rgba(18, 18, 18, 0.98);
-    -webkit-backdrop-filter: blur(8px);
-    backdrop-filter: blur(8px);
-    color: #f4f2ec;
+    inset: 0;
+    z-index: 70;
     display: flex;
-    padding-block: 1.5rem 2.5rem;
+    flex-direction: column;
+    background: rgba(18, 18, 18, 0.98);
+    -webkit-backdrop-filter: blur(10px);
+    backdrop-filter: blur(10px);
+    color: #f4f2ec;
     overflow-y: auto;
+    overscroll-behavior: contain;
   }
   .mobile-menu[hidden] {
     display: none;
   }
+  .mobile-menu__bar {
+    flex: none;
+    height: var(--header-h);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding-inline: 20px;
+    border-bottom: 1px solid rgba(244, 242, 236, 0.12);
+  }
+  .mobile-menu__brand {
+    font-family: var(--font-sans);
+    font-size: 1.15rem;
+    font-weight: 500;
+    letter-spacing: 0.01em;
+    color: #f4f2ec;
+  }
+  .mobile-menu__close {
+    position: relative;
+    width: 44px;
+    height: 44px;
+    margin-right: -10px;
+    background: none;
+    border: 0;
+    cursor: pointer;
+    color: #f4f2ec;
+  }
+  .mobile-menu__close span {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 22px;
+    height: 1.5px;
+    background: currentColor;
+  }
+  .mobile-menu__close span:first-child {
+    transform: translate(-50%, -50%) rotate(45deg);
+  }
+  .mobile-menu__close span:last-child {
+    transform: translate(-50%, -50%) rotate(-45deg);
+  }
   .mobile-menu__nav {
+    flex: 1;
     display: flex;
     flex-direction: column;
-    width: 100%;
-    padding-inline: 24px;
+    padding: 1.25rem 20px 2.5rem;
   }
   .mobile-menu__link {
     font-family: var(--font-sans);
@@ -177,7 +224,7 @@ const { transparent = false } = Astro.props;
     letter-spacing: 0.1em;
     text-transform: uppercase;
     line-height: 1.2;
-    padding-block: 0.95rem;
+    padding-block: 1rem;
     border-bottom: 1px solid rgba(244, 242, 236, 0.12);
   }
   .mobile-menu__cta {
@@ -201,9 +248,11 @@ const { transparent = false } = Astro.props;
 
 <script>
   const header = document.querySelector('[data-header]');
-  const burger = document.querySelector('[data-burger]');
-  const menu = document.querySelector('[data-menu]');
+  const burger = document.querySelector<HTMLButtonElement>('[data-burger]');
+  const menu = document.querySelector<HTMLElement>('[data-menu]');
+  const closeBtn = menu?.querySelector<HTMLButtonElement>('[data-menu-close]');
 
+  // Шапка: прозрачная над hero → матовая после скролла
   if (header && header.classList.contains('site-header--transparent')) {
     const onScroll = () => header.classList.toggle('is-scrolled', window.scrollY > 24);
     onScroll();
@@ -213,16 +262,18 @@ const { transparent = false } = Astro.props;
   if (burger && menu) {
     const setOpen = (open: boolean) => {
       burger.setAttribute('aria-expanded', String(open));
-      burger.setAttribute('aria-label', open ? 'Закрыть меню' : 'Открыть меню');
-      (menu as HTMLElement).hidden = !open;
+      menu.hidden = !open;
+      // Блокируем прокрутку фона, пока меню открыто (и возвращаем после)
       document.documentElement.style.overflow = open ? 'hidden' : '';
+      if (open) closeBtn?.focus();
+      else burger.focus();
     };
-    burger.addEventListener('click', () =>
-      setOpen(burger.getAttribute('aria-expanded') !== 'true'),
-    );
+
+    burger.addEventListener('click', () => setOpen(true));
+    closeBtn?.addEventListener('click', () => setOpen(false));
     menu.querySelectorAll('a').forEach((a) => a.addEventListener('click', () => setOpen(false)));
     document.addEventListener('keydown', (e) => {
-      if (e.key === 'Escape') setOpen(false);
+      if (e.key === 'Escape' && !menu.hidden) setOpen(false);
     });
   }
 </script>
