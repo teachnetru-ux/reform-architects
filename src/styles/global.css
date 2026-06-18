@@ -154,7 +154,7 @@
     aspect-ratio: auto;
     border-radius: 0;
   }
-  .fig__img { width: 100%; height: 100%; object-fit: cover; }
+  .fig__img { width: 100%; height: 100%; object-fit: cover; object-position: center; }
 
   /* Тонкие направляющие линии */
   .hairline { height: 1px; border: 0; background: theme('colors.line.light'); }
@@ -162,9 +162,10 @@
 }
 
 /* =================================================================
-   Плашки сегментов — СТАТИЧНЫЕ (без hover-анимации):
-   ничего не расширяется/сжимается, изображение не масштабируется
-   и не двигается. Десктоп — равные колонки, мобайл — вертикальный стек.
+   Плашки сегментов — статичная раскладка: ничего не расширяется/
+   сжимается. Десктоп — равные колонки, мобайл — вертикальный стек.
+   На десктопе с мышью — лёгкий hover-подъём ТОЛЬКО самой плашки
+   (transform, без reflow). prefers-reduced-motion — без эффекта.
    ================================================================= */
 .segments {
   display: flex;
@@ -197,6 +198,25 @@
   .segment { min-height: 520px; }
 }
 
+/* Десктоп с мышью: тонкий hover-подъём ТОЛЬКО самой плашки (transform —
+   без reflow, поэтому соседние не двигаются и текст не обрезается). */
+@media (hover: hover) and (min-width: 1024px) {
+  .segment {
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+  }
+  .segment .fig__img {
+    transition: filter 0.3s ease;
+  }
+  .segment:hover {
+    transform: translateY(-6px);
+    box-shadow: 0 16px 38px rgba(0, 0, 0, 0.28);
+    z-index: 2;
+  }
+  .segment:hover .fig__img {
+    filter: brightness(1.08);
+  }
+}
+
 /* =================================================================
    REVEAL (мягкое появление при скролле) — c защитой без JS
    ================================================================= */
@@ -221,6 +241,9 @@ html.js [data-reveal].is-visible { opacity: 1; transform: none; }
     scroll-behavior: auto !important;
   }
   html.js [data-reveal] { opacity: 1 !important; transform: none !important; }
+  /* hover-подъём плашек отключён */
+  .segment:hover { transform: none !important; box-shadow: none !important; }
+  .segment:hover .fig__img { filter: none !important; }
 }
 
 /* =================================================================
