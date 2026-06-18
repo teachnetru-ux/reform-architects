@@ -177,7 +177,7 @@
   display: flex;
   align-items: flex-end;
   overflow: hidden;
-  min-height: 188px;
+  min-height: 320px;
   flex: 1 1 0;
   color: theme('colors.ondark');
   isolation: isolate;
@@ -189,7 +189,7 @@
   z-index: 1;
   background: linear-gradient(to top, rgba(16, 16, 16, 0.86) 0%, rgba(16, 16, 16, 0.32) 45%, rgba(16, 16, 16, 0.12) 100%);
 }
-.segment__content { position: relative; z-index: 2; padding: clamp(1.25rem, 1rem + 2vw, 2.5rem); width: 100%; }
+.segment__content { position: relative; z-index: 2; padding: clamp(1.6rem, 1.1rem + 3vw, 2.5rem); width: 100%; }
 
 /* Десктоп: равные статичные колонки (равная высота, текст не обрезается) */
 @media (min-width: 1024px) {
