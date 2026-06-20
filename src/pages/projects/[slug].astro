@@ -20,6 +20,12 @@ const description =
 const gallery = p.gallery || [];
 const firstBlock = gallery.slice(0, 2);
 const restGallery = gallery.slice(2);
+
+// BIM-координация остаётся только в архитектуре; в интерьерах/коммерции убираем
+const scope =
+  p.type === 'Архитектура'
+    ? projectScope
+    : projectScope.filter((s) => s !== 'BIM-координация');
 ---
 
 <Layout title={p.name} description={description} ogImage={p.cover}>
@@ -125,7 +131,7 @@ const restGallery = gallery.slice(2);
       <div class="wrap">
         <h2 class="eyebrow text-muted-light mb-2" data-reveal>Состав работ</h2>
         <ul class="scope-list">
-          {projectScope.map((s) => <li class="scope-list__item" data-reveal>{s}</li>)}
+          {scope.map((s) => <li class="scope-list__item" data-reveal>{s}</li>)}
         </ul>
       </div>
     </section>
