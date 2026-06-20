@@ -38,6 +38,7 @@ const restGallery = gallery.slice(2);
           {p.status && <span>{p.status}</span>}
           {p.city && <span class="proj-hero__city">{p.city}</span>}
         </div>
+        {p.tagline && <p class="proj-hero__tagline" data-reveal>{p.tagline}</p>}
         <div class="proj-hero__media" data-reveal>
           <Figure name={p.heroMedia} alt={`${p.name} — ${p.type}`} ratio="16 / 9" eager={true} />
         </div>
@@ -206,6 +207,15 @@ const restGallery = gallery.slice(2);
   }
   .proj-hero__city {
     color: #6a6a66;
+  }
+  .proj-hero__tagline {
+    margin-top: 1.5rem;
+    max-width: 48ch;
+    font-family: var(--font-sans);
+    font-weight: 300;
+    font-size: clamp(1.0625rem, 1rem + 0.4vw, 1.25rem);
+    line-height: 1.55;
+    color: #2b2b2a;
   }
   .proj-hero__media {
     margin-top: clamp(2rem, 1.5rem + 3vw, 3.5rem);

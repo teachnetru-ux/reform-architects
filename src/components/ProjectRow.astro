@@ -14,6 +14,7 @@ interface Props {
   eager?: boolean;
 }
 const { project: p, index, eager = false } = Astro.props;
+const line = p.tagline || p.essence;
 const meta = [p.area, p.year, p.status].filter(Boolean).join(' · ');
 const num = String(index + 1).padStart(2, '0');
 ---
@@ -33,11 +34,11 @@ const num = String(index + 1).padStart(2, '0');
   <div class="prow__body">
     <span class="prow__num">{num}</span>
     <h2 class="prow__title">{p.name}</h2>
-    {p.essence && <p class="prow__idea">{p.essence}</p>}
+    {line && <p class="prow__idea">{line}</p>}
     <div class="prow__meta-wrap">
       <span class="prow__tag">{p.type}</span>
-      {p.city && <span class="prow__loc">{p.city}</span>}
       {meta && <span class="prow__meta">{meta}</span>}
+      {p.city && <span class="prow__loc">{p.city}</span>}
     </div>
     <span class="prow__cta">Смотреть<span class="arr" aria-hidden="true"> →</span></span>
   </div>
