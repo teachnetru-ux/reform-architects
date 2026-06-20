@@ -8,7 +8,7 @@ export const site = {
   name: 'Reform Architects',
   tagline: 'архитектурное бюро полного цикла',
   domain: 'reform-architects.ru',
-  email: 'hello@reform-architects.ru',
+  email: 'refotm.architect@yandex.ru',
   phone: '+7 (995) 008-27-27',
   phoneHref: '+79950082727',
   established: 2016,
