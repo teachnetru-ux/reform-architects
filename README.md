@@ -12,7 +12,7 @@
 
 ```bash
 npm install
-npm run dev        # локальный сервер → http://localhost:4321/reform-architects/
+npm run dev        # локальный сервер → http://localhost:4321/
 npm run build      # генерирует SVG-заглушки + статическую сборку в dist/
 npm run preview    # предпросмотр собранного сайта
 ```
@@ -116,22 +116,27 @@ formEndpoint: 'https://formspree.io/f/xxxxxxx',
 
 ---
 
-## 🚀 Деплой на GitHub Pages
+## 🚀 Деплой на reg.ru (ISPmanager, автодеплой по FTP)
 
-Уже настроен GitHub Actions: `.github/workflows/deploy.yml` (сборка через
-`withastro/action` + `actions/deploy-pages`).
+Сайт обслуживается из **корня** домена `reform-architects.ru` (в `astro.config.mjs`
+`base` не задан, `site: 'https://reform-architects.ru'` → все пути root-relative).
 
-1. **Settings → Pages → Build and deployment → Source: GitHub Actions.**
-2. Пуш в `main` → workflow собирает и публикует сайт на
-   `https://teachnetru-ux.github.io/reform-architects/`.
+GitHub Actions `.github/workflows/deploy.yml`: на пуш в `main` собирает
+(`npm ci && npm run build`) и заливает содержимое `dist/` по FTP
+(`SamKirkland/FTP-Deploy-Action`).
 
-**Кастомный домен** (например `reform-architects.ru`):
-- в `astro.config.mjs` поставьте `base: '/'` и `site: 'https://reform-architects.ru'`;
-- добавьте файл `public/CNAME` с доменом;
-- (опц.) обновите пути шрифтов в `fonts.css` при self-host.
+Один раз задайте **Secrets** репозитория (*Settings → Secrets and variables →
+Actions*):
 
-Альтернативно (Vercel/Netlify): команда сборки `npm run build`, каталог вывода
-`dist`. Для корневого домена так же поставьте `base: '/'`.
+| Secret | Значение |
+|---|---|
+| `FTP_SERVER` | FTP-хост из ISPmanager (напр. `reform-architects.ru` или IP) |
+| `FTP_USERNAME` | FTP-логин |
+| `FTP_PASSWORD` | FTP-пароль |
+| `FTP_SERVER_DIR` | целевая папка на хостинге, напр. `/www/reform-architects.ru/` (со слэшем в конце) |
+
+После этого любой пуш в `main` публикует сайт. Локальная сборка — `npm run build`,
+вывод в каталог `dist/`.
 
 ---
 
