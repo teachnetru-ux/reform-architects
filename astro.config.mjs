@@ -4,23 +4,16 @@ import tailwind from '@astrojs/tailwind';
 import sitemap from '@astrojs/sitemap';
 
 /**
- * Деплой-цель — GitHub Pages (project site):
- *   https://teachnetru-ux.github.io/reform-architects/
- * Поэтому base = '/reform-architects'. Все ссылки на ассеты и страницы
- * проходят через helper withBase() (src/lib/img.js), который подставляет base.
+ * Деплой-цель — reg.ru (ISPmanager), сайт в КОРНЕ домена reform-architects.ru
+ * (автодеплой по FTP, см. .github/workflows/deploy.yml).
  *
- * Кастомный домен (например reform-architects.ru):
- *   — поставьте base: '/' и site: 'https://reform-architects.ru'
- *   — положите файл public/CNAME с доменом
- *   — обновите --font-serif/--font-sans пути в fonts.css при self-host шрифтов.
+ * `base` не задаём → сайт обслуживается из корня, все ссылки/ассеты/картинки
+ * root-relative (`/projects/`, `/img/…`, `/_astro/…`). helper withBase()
+ * (src/lib/img.js) при base='/' просто отдаёт путь от корня.
  */
 export default defineConfig({
-  site: 'https://teachnetru-ux.github.io',
-  base: '/reform-architects',
+  site: 'https://reform-architects.ru',
   trailingSlash: 'ignore',
   build: { format: 'directory' },
-  integrations: [
-    tailwind({ applyBaseStyles: false }),
-    sitemap(),
-  ],
+  integrations: [tailwind({ applyBaseStyles: false }), sitemap()],
 });

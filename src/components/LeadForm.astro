@@ -4,6 +4,7 @@
  * CTA «Обсудить Ваш проект». Всегда на светлой поверхности.
  */
 import { site } from '../data/site.js';
+import { withBase } from '../lib/img.js';
 
 interface Props {
   id?: string;
@@ -75,7 +76,7 @@ const uid = Math.random().toString(36).slice(2, 8);
             <span>
               Я даю согласие на обработку
               <a
-                href="https://teachnetru-ux.github.io/reform-architects/legal/consent/"
+                href={withBase('/legal/consent/')}
                 target="_blank"
                 rel="noopener noreferrer">персональных данных</a>
             </span>

@@ -1,4 +1,4 @@
 User-agent: *
 Allow: /
 
-Sitemap: https://teachnetru-ux.github.io/reform-architects/sitemap-index.xml
+Sitemap: https://reform-architects.ru/sitemap-index.xml
