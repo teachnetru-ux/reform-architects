@@ -60,6 +60,33 @@ const { title, description } = Astro.props;
   .legal__body :global(p + p) {
     margin-top: 1.25rem;
   }
+  .legal__body :global(h2) {
+    margin-top: 2.75rem;
+    font-family: var(--font-sans);
+    font-weight: 500;
+    font-size: 1.2rem;
+    line-height: 1.3;
+    letter-spacing: 0;
+    color: #141414;
+  }
+  .legal__body :global(h2:first-child) {
+    margin-top: 0;
+  }
+  .legal__body :global(ul) {
+    margin-top: 1rem;
+    padding-left: 1.2rem;
+    list-style: disc;
+  }
+  .legal__body :global(li) {
+    font-family: var(--font-sans);
+    font-weight: 300;
+    font-size: 1.0625rem;
+    line-height: 1.6;
+    color: #2b2b2a;
+  }
+  .legal__body :global(li + li) {
+    margin-top: 0.4rem;
+  }
   .legal__contact {
     margin-top: 2.5rem;
     padding-top: 1.5rem;
