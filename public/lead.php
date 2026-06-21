@@ -3,10 +3,18 @@ header('Content-Type: application/json');
 header('Access-Control-Allow-Origin: https://reform-architects.ru');
 
 // Подключаем конфиг с секретами (лежит НА СЕРВЕРЕ, не в репозитории)
-$config_path = __DIR__ . '/../lead_config.php';
-if (!file_exists($config_path)) {
+$possible_paths = [
+    __DIR__ . '/../../lead_config.php',
+    __DIR__ . '/../lead_config.php',
+    realpath(__DIR__ . '/../../lead_config.php'),
+];
+$config_path = null;
+foreach ($possible_paths as $p) {
+    if ($p && file_exists($p)) { $config_path = $p; break; }
+}
+if (!$config_path) {
     http_response_code(500);
-    echo json_encode(['ok' => false, 'error' => 'config missing']);
+    echo json_encode(['ok' => false, 'error' => 'config not found', 'dir' => __DIR__]);
     exit;
 }
 require $config_path;
@@ -131,11 +139,20 @@ if ($form_type === 'private') {
 }
 
 $tg_url = "https://api.telegram.org/bot{$tg_token}/sendMessage";
-@file_get_contents($tg_url . '?' . http_build_query([
+$tg_params = [
     'chat_id'    => $tg_chat_id,
     'text'       => $tg_text,
     'parse_mode' => 'Markdown',
-]));
+];
+$ch = curl_init();
+curl_setopt($ch, CURLOPT_URL, $tg_url);
+curl_setopt($ch, CURLOPT_POST, true);
+curl_setopt($ch, CURLOPT_POSTFIELDS, http_build_query($tg_params));
+curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+curl_setopt($ch, CURLOPT_TIMEOUT, 10);
+curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, true);
+curl_exec($ch);
+curl_close($ch);
 
 // --- Email-дубль ---
 if ($form_type === 'private') {
