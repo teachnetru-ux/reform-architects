@@ -1,12 +1,30 @@
 <?php
+// ── Заголовки и CORS ─────────────────────────────────────────────
 header('Content-Type: application/json');
-header('Access-Control-Allow-Origin: https://reform-architects.ru');
 
-// Подключаем конфиг с секретами (лежит НА СЕРВЕРЕ, не в репозитории)
+// Разрешаем запросы только со своего домена (с www и без)
+$allowed_origins = [
+    'https://reform-architects.ru',
+    'https://www.reform-architects.ru',
+];
+$origin = $_SERVER['HTTP_ORIGIN'] ?? '';
+if (in_array($origin, $allowed_origins, true)) {
+    header('Access-Control-Allow-Origin: ' . $origin);
+}
+
+// Принимаем только POST
+if (($_SERVER['REQUEST_METHOD'] ?? '') !== 'POST') {
+    http_response_code(405);
+    echo json_encode(['ok' => false, 'error' => 'method not allowed']);
+    exit;
+}
+
+date_default_timezone_set('Europe/Moscow');
+
+// ── Конфиг с секретами (вне веб-корня) ───────────────────────────
 $possible_paths = [
     __DIR__ . '/../../lead_config.php',
     __DIR__ . '/../lead_config.php',
-    realpath(__DIR__ . '/../../lead_config.php'),
 ];
 $config_path = null;
 foreach ($possible_paths as $p) {
@@ -14,46 +32,100 @@ foreach ($possible_paths as $p) {
 }
 if (!$config_path) {
     http_response_code(500);
-    echo json_encode(['ok' => false, 'error' => 'config not found', 'dir' => __DIR__]);
+    echo json_encode(['ok' => false, 'error' => 'config not found']);
     exit;
 }
 require $config_path;
 
-// Валидация
-$form_type = $_POST['form_type'] ?? 'private';
+// ── Хелперы безопасности ─────────────────────────────────────────
+// Чистим вход: убираем переносы строк (защита от header-инъекций),
+// обрезаем по длине, тримим
+function clean($v, $max = 255) {
+    $v = (string)($v ?? '');
+    $v = str_replace(["\r", "\n", "\0"], ' ', $v);
+    $v = trim($v);
+    if (mb_strlen($v) > $max) $v = mb_substr($v, 0, $max);
+    return $v;
+}
+// Экранируем спецсимволы Markdown для Telegram (защита от XSS/инъекций в сообщение)
+function tg_escape($v) {
+    return str_replace(['_', '*', '[', ']', '`'], ['\_', '\*', '\[', '\]', '\`'], $v);
+}
+
+// ── Антиспам: honeypot ───────────────────────────────────────────
+// Скрытое поле website — реальные люди его не заполняют, боты заполняют.
+// Если заполнено — тихо «успех», но ничего не делаем.
+if (!empty($_POST['website'])) {
+    echo json_encode(['ok' => true]);
+    exit;
+}
+
+// ── Антиспам: rate limit по IP ───────────────────────────────────
+// Не больше 5 заявок с одного IP за 10 минут.
+$ip = $_SERVER['REMOTE_ADDR'] ?? 'unknown';
+$rl_file = sys_get_temp_dir() . '/lead_rl_' . md5($ip);
+$now = time();
+$hits = [];
+if (file_exists($rl_file)) {
+    $hits = array_filter(
+        explode(',', (string)file_get_contents($rl_file)),
+        function ($t) use ($now) { return ($now - (int)$t) < 600; }
+    );
+}
+if (count($hits) >= 5) {
+    http_response_code(429);
+    echo json_encode(['ok' => false, 'error' => 'too many requests']);
+    exit;
+}
+$hits[] = $now;
+@file_put_contents($rl_file, implode(',', $hits));
+
+// ── Валидация и сбор данных ──────────────────────────────────────
+$form_type = (($_POST['form_type'] ?? '') === 'developer') ? 'developer' : 'private';
 
 if ($form_type === 'private') {
-    $name  = trim($_POST['name'] ?? '');
-    $phone = trim($_POST['phone'] ?? '');
-    $type  = trim($_POST['project_type'] ?? '');
-    if (!$name || !$phone) {
+    $name  = clean($_POST['name'] ?? '', 150);
+    $phone = clean($_POST['phone'] ?? '', 30);
+    $type  = clean($_POST['project_type'] ?? '', 50);
+    if ($name === '' || $phone === '') {
         echo json_encode(['ok' => false, 'error' => 'required fields missing']);
         exit;
     }
+    $company = $project = $role = $contact = '';
 } else {
-    $company  = trim($_POST['company'] ?? '');
-    $project  = trim($_POST['project_name'] ?? '');
-    $role     = trim($_POST['role'] ?? '');
-    $contact  = trim($_POST['contact'] ?? '');
-    if (!$contact) {
+    $company = clean($_POST['company'] ?? '', 200);
+    $project = clean($_POST['project_name'] ?? '', 200);
+    $role    = clean($_POST['role'] ?? '', 150);
+    $contact = clean($_POST['contact'] ?? '', 150);
+    if ($contact === '') {
         echo json_encode(['ok' => false, 'error' => 'required fields missing']);
         exit;
     }
+    $name = $phone = $type = '';
 }
 
 // UTM
-$utm_source   = trim($_POST['utm_source'] ?? '');
-$utm_medium   = trim($_POST['utm_medium'] ?? '');
-$utm_campaign = trim($_POST['utm_campaign'] ?? '');
-$utm_term     = trim($_POST['utm_term'] ?? '');
-$utm_content  = trim($_POST['utm_content'] ?? '');
-$utm_referrer = trim($_POST['utm_referrer'] ?? '');
-$utm_page     = trim($_POST['utm_page'] ?? '');
-$ip           = $_SERVER['REMOTE_ADDR'] ?? '';
-$ua           = $_SERVER['HTTP_USER_AGENT'] ?? '';
-$date         = date('d.m.Y H:i', time() + 3 * 3600); // МСК
+$utm_source   = clean($_POST['utm_source'] ?? '');
+$utm_medium   = clean($_POST['utm_medium'] ?? '');
+$utm_campaign = clean($_POST['utm_campaign'] ?? '');
+$utm_term     = clean($_POST['utm_term'] ?? '');
+$utm_content  = clean($_POST['utm_content'] ?? '');
+$utm_referrer = clean($_POST['utm_referrer'] ?? '', 500);
+$utm_page     = clean($_POST['utm_page'] ?? '', 500);
 
-// --- MySQL: запись лида ---
+// Если страница не пришла или равна '/', берём путь из referer
+if ($utm_page === '' || $utm_page === '/') {
+    $referer = $_SERVER['HTTP_REFERER'] ?? '';
+    if ($referer) {
+        $parsed = parse_url($referer);
+        $utm_page = $parsed['path'] ?? '/';
+    }
+}
+
+$ua   = clean($_SERVER['HTTP_USER_AGENT'] ?? '', 500);
+$date = date('d.m.Y H:i');
+
+// ── MySQL: запись лида ───────────────────────────────────────────
 try {
     $pdo = new PDO(
         "mysql:host=localhost;dbname={$db_name};charset=utf8mb4",
@@ -61,7 +133,6 @@ try {
         [PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION]
     );
 
-    // Создаём таблицу если не существует
     $pdo->exec("CREATE TABLE IF NOT EXISTS leads (
         id          INT AUTO_INCREMENT PRIMARY KEY,
         form_type   VARCHAR(20),
@@ -89,21 +160,16 @@ try {
          utm_source, utm_medium, utm_campaign, utm_term, utm_content, utm_referrer, utm_page, ip, ua)
         VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)");
 
-    if ($form_type === 'private') {
-        $stmt->execute([$form_type, $name, $phone, $type, '', '', '', '',
-            $utm_source, $utm_medium, $utm_campaign, $utm_term, $utm_content, $utm_referrer, $utm_page, $ip, $ua]);
-    } else {
-        $stmt->execute([$form_type, '', '', '', $company, $project, $role, $contact,
-            $utm_source, $utm_medium, $utm_campaign, $utm_term, $utm_content, $utm_referrer, $utm_page, $ip, $ua]);
-    }
+    $stmt->execute([$form_type, $name, $phone, $type, $company, $project, $role, $contact,
+        $utm_source, $utm_medium, $utm_campaign, $utm_term, $utm_content, $utm_referrer, $utm_page, $ip, $ua]);
 
     $lead_id = $pdo->lastInsertId();
 } catch (Exception $e) {
     $lead_id = 0;
 }
 
-// --- Telegram ---
-function dash($v) { return $v !== '' ? $v : '—'; }
+// ── Telegram ─────────────────────────────────────────────────────
+function dash($v) { return $v !== '' ? tg_escape($v) : '—'; }
 
 if ($form_type === 'private') {
     $tg_text = "🔔 *Новая заявка · Reform Architects*\n\n"
@@ -112,11 +178,11 @@ if ($form_type === 'private') {
         . "Тип объекта: " . dash($type) . "\n\n"
         . "*Источник*\n"
         . "Страница:      " . dash($utm_page) . "\n"
-        . "utm\_source:   " . dash($utm_source) . "\n"
-        . "utm\_medium:  " . dash($utm_medium) . "\n"
-        . "utm\_campaign: " . dash($utm_campaign) . "\n"
-        . "utm\_term:     " . dash($utm_term) . "\n"
-        . "utm\_content:  " . dash($utm_content) . "\n"
+        . "utm\\_source:   " . dash($utm_source) . "\n"
+        . "utm\\_medium:  " . dash($utm_medium) . "\n"
+        . "utm\\_campaign: " . dash($utm_campaign) . "\n"
+        . "utm\\_term:     " . dash($utm_term) . "\n"
+        . "utm\\_content:  " . dash($utm_content) . "\n"
         . "Реферер:       " . dash($utm_referrer) . "\n\n"
         . "Время: " . $date . " (МСК)\n"
         . "Заявка #" . $lead_id;
@@ -128,11 +194,11 @@ if ($form_type === 'private') {
         . "Контакт:     " . dash($contact) . "\n\n"
         . "*Источник*\n"
         . "Страница:      " . dash($utm_page) . "\n"
-        . "utm\_source:   " . dash($utm_source) . "\n"
-        . "utm\_medium:  " . dash($utm_medium) . "\n"
-        . "utm\_campaign: " . dash($utm_campaign) . "\n"
-        . "utm\_term:     " . dash($utm_term) . "\n"
-        . "utm\_content:  " . dash($utm_content) . "\n"
+        . "utm\\_source:   " . dash($utm_source) . "\n"
+        . "utm\\_medium:  " . dash($utm_medium) . "\n"
+        . "utm\\_campaign: " . dash($utm_campaign) . "\n"
+        . "utm\\_term:     " . dash($utm_term) . "\n"
+        . "utm\\_content:  " . dash($utm_content) . "\n"
         . "Реферер:       " . dash($utm_referrer) . "\n\n"
         . "Время: " . $date . " (МСК)\n"
         . "Заявка #" . $lead_id;
@@ -154,7 +220,7 @@ curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, true);
 curl_exec($ch);
 curl_close($ch);
 
-// --- Email-дубль ---
+// ── Email-дубль ──────────────────────────────────────────────────
 if ($form_type === 'private') {
     $email_body = "Новая заявка\n\nИмя: {$name}\nТелефон: {$phone}\nТип объекта: {$type}\n\n"
         . "utm_source: {$utm_source}\nutm_medium: {$utm_medium}\nutm_campaign: {$utm_campaign}\n"

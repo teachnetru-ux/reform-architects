@@ -25,6 +25,7 @@ const uid = Math.random().toString(36).slice(2, 8);
       </div>
 
       <form class="lead-form" action="/lead.php" method="POST" data-lead data-reveal>
+        <input type="text" name="website" tabindex="-1" autocomplete="off" aria-hidden="true" style="position:absolute;left:-9999px;width:1px;height:1px;opacity:0;pointer-events:none;" />
         <div class="form-body" data-form-body>
           <div class="field">
             <label for={`company-${uid}`}>Компания</label>
