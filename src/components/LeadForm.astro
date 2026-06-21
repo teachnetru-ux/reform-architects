@@ -19,8 +19,6 @@ const {
   subtitle = 'Расскажите, что планируете — предложим следующий шаг.',
 } = Astro.props;
 
-const endpoint = site.formEndpoint;
-const demo = !endpoint;
 const uid = Math.random().toString(36).slice(2, 8);
 ---
 
@@ -34,13 +32,7 @@ const uid = Math.random().toString(36).slice(2, 8);
         <p class="form-note">Мы не передаём ваши контакты третьим лицам.</p>
       </div>
 
-      <form
-        class="lead-form"
-        action={endpoint || '#'}
-        method="POST"
-        data-demo={demo ? '' : undefined}
-        data-reveal
-      >
+      <form class="lead-form" action="/lead.php" method="POST" data-lead data-reveal>
         <div class="form-body" data-form-body>
           <div class="field">
             <label for={`name-${uid}`}>Имя</label>
@@ -63,11 +55,11 @@ const uid = Math.random().toString(36).slice(2, 8);
           </div>
           <div class="field">
             <label for={`type-${uid}`}>Тип объекта</label>
-            <select id={`type-${uid}`} name="object_type" required>
+            <select id={`type-${uid}`} name="project_type" required>
               <option value="" selected disabled>Выберите</option>
-              <option value="house">Дом</option>
-              <option value="apartment">Квартира</option>
-              <option value="commercial">Коммерция</option>
+              <option value="Дом">Дом</option>
+              <option value="Квартира">Квартира</option>
+              <option value="Коммерция">Коммерция</option>
             </select>
           </div>
 
@@ -82,13 +74,25 @@ const uid = Math.random().toString(36).slice(2, 8);
             </span>
           </label>
 
+          <input type="hidden" name="utm_source" />
+          <input type="hidden" name="utm_medium" />
+          <input type="hidden" name="utm_campaign" />
+          <input type="hidden" name="utm_term" />
+          <input type="hidden" name="utm_content" />
+          <input type="hidden" name="utm_referrer" />
+          <input type="hidden" name="utm_page" />
+          <input type="hidden" name="form_type" value="private" />
+
           <button type="submit" class="btn btn--solid form-submit">
             {site.cta.private}<span class="btn__arrow" aria-hidden="true">→</span>
           </button>
         </div>
 
         <p class="form-success" data-form-success hidden tabindex="-1">
-          Спасибо — заявка принята. Мы свяжемся с вами в ближайшее время.
+          Заявка отправлена — свяжемся в течение дня.
+        </p>
+        <p class="form-success" data-form-error hidden tabindex="-1">
+          Что-то пошло не так, попробуйте ещё раз или напишите нам напрямую.
         </p>
       </form>
     </div>

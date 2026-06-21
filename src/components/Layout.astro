@@ -130,17 +130,40 @@ const orgLd = {
         els.forEach((el) => io.observe(el));
       }
 
-      // Формы: демо-режим (нет endpoint) — показываем подтверждение без отправки
-      document.querySelectorAll('form[data-demo]').forEach((form) => {
-        form.addEventListener('submit', (e) => {
-          if (!(form instanceof HTMLFormElement) || !form.checkValidity()) return;
+      // Формы лидов: отправка через fetch на /lead.php без перезагрузки;
+      // нативная валидация → сообщение успеха/ошибки → цель Метрики на успех.
+      document.querySelectorAll('form[data-lead]').forEach((form) => {
+        if (!(form instanceof HTMLFormElement)) return;
+        form.addEventListener('submit', async (e) => {
           e.preventDefault();
+          if (!form.checkValidity()) {
+            form.reportValidity();
+            return;
+          }
           const body = form.querySelector('[data-form-body]');
           const ok = form.querySelector('[data-form-success]');
-          if (body) body.setAttribute('hidden', '');
-          if (ok instanceof HTMLElement) {
-            ok.removeAttribute('hidden');
-            ok.focus();
+          const err = form.querySelector('[data-form-error]');
+          const submitBtn = form.querySelector('button[type="submit"]');
+          err?.setAttribute('hidden', '');
+          submitBtn?.setAttribute('disabled', '');
+          try {
+            const res = await fetch(form.action, { method: 'POST', body: new FormData(form) });
+            const json = await res.json();
+            if (json && json.ok) {
+              body?.setAttribute('hidden', '');
+              ok?.removeAttribute('hidden');
+              if (ok instanceof HTMLElement) ok.focus();
+              const ym = (window as any).ym;
+              if (typeof ym === 'function') ym(98224185, 'reachGoal', 'lead');
+            } else {
+              throw new Error('server');
+            }
+          } catch {
+            if (err instanceof HTMLElement) {
+              err.removeAttribute('hidden');
+              err.focus();
+            }
+            submitBtn?.removeAttribute('disabled');
           }
         });
       });
@@ -170,5 +193,7 @@ const orgLd = {
         });
       });
     </script>
+
+    <script is:inline src="/utm.js"></script>
   </body>
 </html>

@@ -11,8 +11,6 @@ interface Props {
 }
 const { id = 'contact' } = Astro.props;
 
-const endpoint = site.formEndpoint;
-const demo = !endpoint;
 const uid = Math.random().toString(36).slice(2, 8);
 ---
 
@@ -26,30 +24,33 @@ const uid = Math.random().toString(36).slice(2, 8);
         <p class="form-note">Работаем выборочно. Отвечаем по существу запроса.</p>
       </div>
 
-      <form
-        class="lead-form"
-        action={endpoint || '#'}
-        method="POST"
-        data-demo={demo ? '' : undefined}
-        data-reveal
-      >
+      <form class="lead-form" action="/lead.php" method="POST" data-lead data-reveal>
         <div class="form-body" data-form-body>
           <div class="field">
             <label for={`company-${uid}`}>Компания</label>
-            <input id={`company-${uid}`} name="company" type="text" autocomplete="organization" required />
+            <input id={`company-${uid}`} name="company" type="text" autocomplete="organization" />
           </div>
           <div class="field">
             <label for={`project-${uid}`}>Проект / ЖК</label>
-            <input id={`project-${uid}`} name="project" type="text" required />
+            <input id={`project-${uid}`} name="project_name" type="text" />
           </div>
           <div class="field">
             <label for={`role-${uid}`}>Ваша роль</label>
-            <input id={`role-${uid}`} name="role" type="text" autocomplete="organization-title" required />
+            <input id={`role-${uid}`} name="role" type="text" autocomplete="organization-title" />
           </div>
           <div class="field">
             <label for={`contact-${uid}`}>Контакт (телефон или email)</label>
             <input id={`contact-${uid}`} name="contact" type="text" autocomplete="email" required />
           </div>
+
+          <input type="hidden" name="utm_source" />
+          <input type="hidden" name="utm_medium" />
+          <input type="hidden" name="utm_campaign" />
+          <input type="hidden" name="utm_term" />
+          <input type="hidden" name="utm_content" />
+          <input type="hidden" name="utm_referrer" />
+          <input type="hidden" name="utm_page" />
+          <input type="hidden" name="form_type" value="developer" />
 
           <button type="submit" class="btn btn--solid form-submit">
             {site.cta.b2b}<span class="btn__arrow" aria-hidden="true">→</span>
@@ -57,7 +58,10 @@ const uid = Math.random().toString(36).slice(2, 8);
         </div>
 
         <p class="form-success" data-form-success hidden tabindex="-1">
-          Спасибо — запрос принят. Свяжемся с вами, чтобы согласовать встречу.
+          Заявка отправлена — свяжемся в течение дня.
+        </p>
+        <p class="form-success" data-form-error hidden tabindex="-1">
+          Что-то пошло не так, попробуйте ещё раз или напишите нам напрямую.
         </p>
       </form>
     </div>
