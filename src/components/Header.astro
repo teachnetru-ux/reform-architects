@@ -6,6 +6,13 @@ interface Props {
   transparent?: boolean;
 }
 const { transparent = false } = Astro.props;
+
+// Цели Метрики для пунктов навигации (по href)
+const navKey: Record<string, string> = {
+  '/projects/': 'projects',
+  '/developers/': 'developers',
+  '#contact': 'contacts',
+};
 ---
 
 <header class:list={['site-header', transparent && 'site-header--transparent']} data-header>
@@ -13,11 +20,21 @@ const { transparent = false } = Astro.props;
     <a href={withBase('/')} class="wordmark" aria-label={`${site.name} — на главную`}>reform architects</a>
 
     <nav class="site-nav" aria-label="Основная навигация">
-      {site.nav.map((item) => <a href={withBase(item.href)} class="site-nav__link">{item.label}</a>)}
+      {
+        site.nav.map((item) => (
+          <a
+            href={withBase(item.href)}
+            class="site-nav__link"
+            data-goal={navKey[item.href] ? `nav_${navKey[item.href]}` : undefined}
+          >
+            {item.label}
+          </a>
+        ))
+      }
     </nav>
 
     <div class="site-header__actions">
-      <a href={withBase('#contact')} class="btn btn--ghost site-header__cta">
+      <a href={withBase('#contact')} class="btn btn--ghost site-header__cta" data-goal="nav_cta">
         {site.cta.private}<span class="btn__arrow" aria-hidden="true">→</span>
       </a>
       <button
@@ -48,8 +65,20 @@ const { transparent = false } = Astro.props;
     </button>
   </div>
   <nav class="mobile-menu__nav" aria-label="Мобильная навигация">
-    {site.nav.map((item) => <a href={withBase(item.href)} class="mobile-menu__link">{item.label}</a>)}
-    <a href={withBase('#contact')} class="btn btn--light mobile-menu__cta">{site.cta.private}</a>
+    {
+      site.nav.map((item) => (
+        <a
+          href={withBase(item.href)}
+          class="mobile-menu__link"
+          data-goal={navKey[item.href] ? `nav_${navKey[item.href]}` : undefined}
+        >
+          {item.label}
+        </a>
+      ))
+    }
+    <a href={withBase('#contact')} class="btn btn--light mobile-menu__cta" data-goal="nav_cta">
+      {site.cta.private}
+    </a>
   </nav>
 </div>
 

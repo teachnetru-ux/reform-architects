@@ -11,7 +11,7 @@ import Figure from './Figure.astro';
 <nav class="segments" aria-label="Чем мы занимаемся">
   {
     segments.map((seg, i) => (
-      <a class="segment" href={withBase(seg.href)}>
+      <a class="segment" href={withBase(seg.href)} data-goal={`segment_${seg.image.replace('seg-', '')}`}>
         <Figure name={seg.image} alt={`${seg.label} — Reform Architects`} fill={true} />
         <span class="segment__shade" aria-hidden="true" />
         <span class="segment__content">

@@ -24,4 +24,14 @@
       if (pageInput) pageInput.value = sessionStorage.getItem('utm_page') || window.location.pathname;
     });
   });
+
+  // Аналитика: клики по элементам с data-goal → reachGoal (Метрика 98224185)
+  document.addEventListener('click', function (e) {
+    var el = e.target.closest('[data-goal]');
+    if (!el) return;
+    var goal = el.getAttribute('data-goal');
+    if (goal && typeof ym !== 'undefined') {
+      ym(98224185, 'reachGoal', goal);
+    }
+  });
 })();

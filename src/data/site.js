@@ -40,8 +40,8 @@ export const site = {
 
   /** Мессенджеры и поддержка (внешние ссылки). */
   chats: [
-    { label: 'Telegram', href: 'https://t.me/reform_architects' },
-    { label: 'МАКС', href: 'https://t.me/reform_architects' },
+    { label: 'Telegram', href: 'https://t.me/reform_architects', goal: 'footer_telegram' },
+    { label: 'МАКС', href: 'https://t.me/reform_architects', goal: 'footer_max' },
   ],
   support: {
     label: 'Чат-поддержки',

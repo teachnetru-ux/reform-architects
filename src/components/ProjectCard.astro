@@ -5,12 +5,13 @@ import { withBase } from '../lib/img.js';
 interface Props {
   project: any;
   eager?: boolean;
+  goal?: string;
 }
-const { project: p, eager = false } = Astro.props;
+const { project: p, eager = false, goal } = Astro.props;
 const meta = [p.type, p.area, p.year, p.status].filter(Boolean).join(' · ');
 ---
 
-<a class="pcard" href={withBase(`/projects/${p.slug}/`)} data-reveal>
+<a class="pcard" href={withBase(`/projects/${p.slug}/`)} data-goal={goal} data-reveal>
   <Figure
     name={p.cover}
     alt={`${p.name} — ${p.type}`}

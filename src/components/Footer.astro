@@ -1,6 +1,12 @@
 ---
 import { site } from '../data/site.js';
 import { withBase } from '../lib/img.js';
+
+const navKey: Record<string, string> = {
+  '/projects/': 'projects',
+  '/developers/': 'developers',
+  '#contact': 'contacts',
+};
 ---
 
 <footer class="site-footer" id="footer">
@@ -14,23 +20,39 @@ import { withBase } from '../lib/img.js';
           Архитектурное бюро полного цикла. Проектируем дома, резиденции и интерьеры и ведём их до
           реализации в едином контуре ответственности.
         </p>
-        <a href={withBase('#contact')} class="btn btn--light footer-cta">
+        <a href={withBase('#contact')} class="btn btn--light footer-cta" data-goal="footer_cta">
           {site.cta.private}<span class="btn__arrow" aria-hidden="true">→</span>
         </a>
       </div>
 
       <nav class="footer-col" aria-label="Подвал — разделы">
         <p class="eyebrow footer-col__title">Разделы</p>
-        {site.nav.map((item) => <a href={withBase(item.href)} class="footer-link">{item.label}</a>)}
+        {
+          site.nav.map((item) => (
+            <a
+              href={withBase(item.href)}
+              class="footer-link"
+              data-goal={navKey[item.href] ? `footer_${navKey[item.href]}` : undefined}
+            >
+              {item.label}
+            </a>
+          ))
+        }
       </nav>
 
       <div class="footer-col">
         <p class="eyebrow footer-col__title">Контакты</p>
-        <a href={`mailto:${site.email}`} class="footer-link">{site.email}</a>
-        <a href={`tel:${site.phoneHref}`} class="footer-link">{site.phone}</a>
+        <a href={`mailto:${site.email}`} class="footer-link" data-goal="footer_email">{site.email}</a>
+        <a href={`tel:${site.phoneHref}`} class="footer-link" data-goal="footer_phone">{site.phone}</a>
         {
           site.chats.map((c) => (
-            <a href={c.href} class="footer-link" target="_blank" rel="noopener noreferrer">
+            <a
+              href={c.href}
+              class="footer-link"
+              target="_blank"
+              rel="noopener noreferrer"
+              data-goal={c.goal}
+            >
               {c.label}
             </a>
           ))
@@ -40,7 +62,8 @@ import { withBase } from '../lib/img.js';
             href={site.support.href}
             class="footer-link"
             target="_blank"
-            rel="noopener noreferrer">{site.support.label}</a>
+            rel="noopener noreferrer"
+            data-goal="footer_support">{site.support.label}</a>
           <span class="footer-support__hours">{site.support.hours}</span>
         </div>
       </div>
