@@ -15,6 +15,9 @@ yarn-error.log*
 .env.production
 .DS_Store
 
+# серверный конфиг лидов с секретами — НЕ коммитить (лежит на сервере)
+lead_config.php
+
 # editor
 .vscode/
 .idea/
