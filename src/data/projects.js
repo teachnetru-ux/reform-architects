@@ -307,7 +307,7 @@ export const projects = [
     category: 'restaurants',
     order: 12,
     featured: false,
-    area: null,
+    area: '120 м²',
     year: null,
     status: null,
     city: 'Москва',
@@ -370,7 +370,8 @@ export const projects = [
     type: 'Коммерция',
     category: 'restaurants',
     order: 17,
-    city: 'Москва',
+    area: '520 м²',
+    city: 'Казань',
     goal: 'project_tsum_luciano',
   }),
 ];
