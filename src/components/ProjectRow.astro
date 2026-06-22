@@ -19,7 +19,7 @@ const meta = [p.area, p.year, p.status].filter(Boolean).join(' · ');
 const num = String(index + 1).padStart(2, '0');
 ---
 
-<a class="prow" href={withBase(`/projects/${p.slug}/`)} data-reveal>
+<a class="prow" href={withBase(`/projects/${p.slug}/`)} data-goal={p.goal} data-reveal>
   <div class="prow__media">
     <Figure
       name={p.cover}
