@@ -18,6 +18,8 @@ const description =
     : `${p.name} — ${p.type}. Проект Reform Architects: от концепции до реализации в едином контуре ответственности.`;
 
 const gallery = p.gallery || [];
+// Ведущие кадры над эссенцией (если заданы) — портретная сетка 2-up.
+const leadMedia = (p.leadMedia || []).map((g) => ({ ...g, ratio: g.ratio || '4 / 5' }));
 // Каждый кадр может задать свой ratio. По умолчанию (как раньше): первые два —
 // портретная сетка 4:5, остальные — широкие 16:9. Портреты идут в сетку 2-up,
 // широкие — в полноширинную «Визуальную историю».
@@ -61,6 +63,19 @@ const scope =
         }
       </div>
     </header>
+
+    {/* 1.5 — Ведущие кадры над эссенцией (если заданы) */}
+    {
+      leadMedia.length > 0 && (
+        <section class="section-sm">
+          <div class="wrap proj-firstblock">
+            {leadMedia.map((g) => (
+              <Figure name={g.name} alt={g.caption || `${p.name} — кадр`} ratio={g.ratio} />
+            ))}
+          </div>
+        </section>
+      )
+    }
 
     {/* 2 — Эссенция */}
     {

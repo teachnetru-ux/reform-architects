@@ -63,7 +63,7 @@ const slots = [
 for (const p of projects) {
   if (p.cover) slots.push([p.cover, `${p.name} · обложка`]);
   if (p.heroMedia) slots.push([p.heroMedia, `${p.name} · hero`]);
-  for (const g of p.gallery || []) {
+  for (const g of [...(p.leadMedia || []), ...(p.gallery || [])]) {
     slots.push([g.name, g.caption ? `${p.name} · ${g.caption}` : `${p.name} · кадр`]);
   }
 }
