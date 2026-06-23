@@ -522,8 +522,18 @@ export const projectTabs = [
   { key: 'all', label: 'Все проекты', href: '/projects/' },
 ];
 
-/** Избранное для главной (грид главной = только избранные проекты). */
-export const showcase = projects.filter((p) => p.featured).sort((a, b) => a.order - b.order);
+/**
+ * Грид проектов на ГЛАВНОЙ. Первые карточки заданы вручную
+ * (Luciano 74 → ЦУМ Luciano → Porto), остальные — featured-проекты по их order.
+ * Порядок в каталоге и в фильтрах («Рестораны и бутики» и т.д.) от этого не зависит.
+ */
+const homeLead = ['luciano-74', 'tsum-luciano', 'porto'];
+export const showcase = [
+  ...homeLead.map((slug) => projects.find((p) => p.slug === slug)),
+  ...projects
+    .filter((p) => p.featured && !homeLead.includes(p.slug))
+    .sort((a, b) => a.order - b.order),
+].filter(Boolean);
 
 /** Полный каталог — все проекты по порядку. */
 export const allProjects = [...projects].sort((a, b) => a.order - b.order);
