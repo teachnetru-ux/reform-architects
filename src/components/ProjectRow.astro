@@ -17,9 +17,11 @@ const { project: p, index, eager = false } = Astro.props;
 const line = p.tagline || p.essence;
 const meta = [p.area, p.year, p.status].filter(Boolean).join(' · ');
 const num = String(index + 1).padStart(2, '0');
+// Клик-цель аналитики: явный goal проекта либо производный project_<slug>.
+const goal = p.goal || `project_${p.slug.replace(/-/g, '_')}`;
 ---
 
-<a class="prow" href={withBase(`/projects/${p.slug}/`)} data-goal={p.goal} data-reveal>
+<a class="prow" href={withBase(`/projects/${p.slug}/`)} data-goal={goal} data-reveal>
   <div class="prow__media">
     <Figure
       name={p.cover}
