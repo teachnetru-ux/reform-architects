@@ -90,6 +90,7 @@ export const projects = [
     type: 'Интерьер',
     category: 'apartments',
     order: 2,
+    catalogOrder: 3.5, // листинг «Все проекты»: 4-я строка (где раньше был ЦУМ Luciano)
     featured: true,
     area: '72 м²',
     city: 'Москва, ЖК «Отражение»',
@@ -447,7 +448,8 @@ export const projects = [
     name: 'ЦУМ Luciano',
     type: 'Коммерция',
     category: 'restaurants',
-    order: 3.5, // в каталоге — сразу после Porto (3); порядковые номера остальных не трогаем
+    order: 3.5, // категории/«Рестораны и бутики»: сразу после Porto (3) — не трогаем
+    catalogOrder: 2, // листинг «Все проекты»: 2-я строка, выше Porto
     area: '520 м²',
     city: 'Казань',
     goal: 'project_tsum_luciano',
@@ -535,11 +537,19 @@ export const showcase = [
     .sort((a, b) => a.order - b.order),
 ].filter(Boolean);
 
-/** Полный каталог — все проекты по порядку. */
+/** Полный список — по order. Опора для категорий/фильтров и блока «Смотрите также». */
 export const allProjects = [...projects].sort((a, b) => a.order - b.order);
 
+/**
+ * Листинг «Все проекты» (/projects/) — свой порядок вывода: catalogOrder перекрывает
+ * order только здесь. На главную, категории/фильтры и «Смотрите также» не влияет.
+ */
+const catalogAll = [...projects].sort(
+  (a, b) => (a.catalogOrder ?? a.order) - (b.catalogOrder ?? b.order),
+);
+
 export const getByCategory = (key) =>
-  key === 'all' ? allProjects : allProjects.filter((p) => p.category === key);
+  key === 'all' ? catalogAll : allProjects.filter((p) => p.category === key);
 
 export const getProject = (slug) => projects.find((p) => p.slug === slug);
 
