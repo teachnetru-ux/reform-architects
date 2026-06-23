@@ -45,9 +45,13 @@ const scope =
           {p.city && <span class="proj-hero__city">{p.city}</span>}
         </div>
         {p.tagline && <p class="proj-hero__tagline" data-reveal>{p.tagline}</p>}
-        <div class="proj-hero__media" data-reveal>
-          <Figure name={p.heroMedia} alt={`${p.name} — ${p.type}`} ratio="16 / 9" eager={true} />
-        </div>
+        {
+          p.heroMedia && (
+            <div class="proj-hero__media" data-reveal>
+              <Figure name={p.heroMedia} alt={`${p.name} — ${p.type}`} ratio="16 / 9" eager={true} />
+            </div>
+          )
+        }
       </div>
     </header>
 

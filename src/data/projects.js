@@ -317,8 +317,8 @@ export const projects = [
     context: { task: PLACEHOLDER, limits: PLACEHOLDER, solution: PLACEHOLDER },
     idea: PLACEHOLDER,
     hero: PLACEHOLDER,
-    cover: 'elyts-01',
-    heroMedia: 'elyts-hero',
+    cover: 'elyts-cover',
+    heroMedia: null,
     gallery: [
       { name: 'elyts-01', caption: null },
       { name: 'elyts-02', caption: null },
