@@ -13,7 +13,13 @@ jobs:
           node-version: 20
       - run: npm ci
       - run: npm run build
+
+      # reg.ru — общий FTP, иногда «зависает» на отдельной операции дольше
+      # дефолтных 30с (basic-ftp → «Timeout (control socket)»). Поднимаем таймаут
+      # и делаем один автоматический повтор, чтобы разовый сбой не валил деплой.
       - name: Deploy via FTP
+        id: deploy
+        continue-on-error: true
         uses: SamKirkland/FTP-Deploy-Action@v4.3.5
         with:
           server: ${{ secrets.FTP_SERVER }}
@@ -21,3 +27,15 @@ jobs:
           password: ${{ secrets.FTP_PASSWORD }}
           local-dir: ./dist/
           server-dir: ${{ secrets.FTP_SERVER_DIR }}
+          timeout: 300000
+
+      - name: Deploy via FTP (повтор после таймаута)
+        if: steps.deploy.outcome == 'failure'
+        uses: SamKirkland/FTP-Deploy-Action@v4.3.5
+        with:
+          server: ${{ secrets.FTP_SERVER }}
+          username: ${{ secrets.FTP_USERNAME }}
+          password: ${{ secrets.FTP_PASSWORD }}
+          local-dir: ./dist/
+          server-dir: ${{ secrets.FTP_SERVER_DIR }}
+          timeout: 300000
