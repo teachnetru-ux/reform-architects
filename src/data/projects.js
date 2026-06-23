@@ -21,10 +21,12 @@ export const PLACEHOLDER = '[Текст будет добавлен]';
 
 /**
  * Сборка проекта с единой структурой и плейсхолдерами по умолчанию.
- * `data` перекрывает дефолты; cover / heroMedia / gallery выводятся из slug.
+ * `data` перекрывает дефолты; cover / gallery выводятся из slug.
+ * heroMedia по умолчанию `${slug}-hero`, но его можно явно задать
+ * (в т.ч. `null` — проект без hero-блока).
  */
 function project(data) {
-  const { slug, galleryCount = 3, gallery, ...rest } = data;
+  const { slug, galleryCount = 3, gallery, heroMedia, ...rest } = data;
   const autoGallery = Array.from({ length: galleryCount }, (_, i) => ({
     name: `${slug}-${String(i + 1).padStart(2, '0')}`,
     caption: null,
@@ -43,7 +45,7 @@ function project(data) {
     featured: false,
     ...rest,
     cover: `${slug}-cover`,
-    heroMedia: `${slug}-hero`,
+    heroMedia: heroMedia !== undefined ? heroMedia : `${slug}-hero`,
     gallery: gallery ?? autoGallery,
   };
 }
@@ -346,33 +348,55 @@ export const projects = [
   }),
   project({
     slug: 'mandelli-1',
-    name: 'Mandelli 1',
+    name: 'Mandelli · Four Season',
     type: 'Коммерция',
     category: 'restaurants',
     order: 15,
     area: '130 м²',
     city: 'Москва',
     goal: 'project_mandelli_1',
+    // hero (16:9) → 4 портретных кадра (4:5)
+    gallery: [
+      { name: 'mandelli-1-01', caption: null, ratio: '4 / 5' },
+      { name: 'mandelli-1-02', caption: null, ratio: '4 / 5' },
+      { name: 'mandelli-1-03', caption: null, ratio: '4 / 5' },
+      { name: 'mandelli-1-04', caption: null, ratio: '4 / 5' },
+    ],
   }),
   project({
     slug: 'mandelli-2',
-    name: 'Mandelli 2',
+    name: 'Mandelli · Crocus city hall',
     type: 'Коммерция',
     category: 'restaurants',
     order: 16,
     area: '130 м²',
     city: 'Москва',
     goal: 'project_mandelli_2',
+    heroMedia: null, // без hero-блока — сразу 4 портретных кадра (4:5)
+    gallery: [
+      { name: 'mandelli-2-01', caption: null, ratio: '4 / 5' },
+      { name: 'mandelli-2-02', caption: null, ratio: '4 / 5' },
+      { name: 'mandelli-2-03', caption: null, ratio: '4 / 5' },
+      { name: 'mandelli-2-04', caption: null, ratio: '4 / 5' },
+    ],
   }),
   project({
     slug: 'tsum-luciano',
     name: 'ЦУМ Luciano',
     type: 'Коммерция',
     category: 'restaurants',
-    order: 17,
+    order: 3.5, // в каталоге — сразу после Porto (3); порядковые номера остальных не трогаем
     area: '520 м²',
     city: 'Казань',
     goal: 'project_tsum_luciano',
+    // hero (16:9) → 4 портретных кадра (4:5) → один широкий (16:9)
+    gallery: [
+      { name: 'tsum-luciano-01', caption: null, ratio: '4 / 5' },
+      { name: 'tsum-luciano-02', caption: null, ratio: '4 / 5' },
+      { name: 'tsum-luciano-03', caption: null, ratio: '4 / 5' },
+      { name: 'tsum-luciano-04', caption: null, ratio: '4 / 5' },
+      { name: 'tsum-luciano-05', caption: null, ratio: '16 / 9' },
+    ],
   }),
 ];
 

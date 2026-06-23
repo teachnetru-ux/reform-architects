@@ -18,8 +18,15 @@ const description =
     : `${p.name} — ${p.type}. Проект Reform Architects: от концепции до реализации в едином контуре ответственности.`;
 
 const gallery = p.gallery || [];
-const firstBlock = gallery.slice(0, 2);
-const restGallery = gallery.slice(2);
+// Каждый кадр может задать свой ratio. По умолчанию (как раньше): первые два —
+// портретная сетка 4:5, остальные — широкие 16:9. Портреты идут в сетку 2-up,
+// широкие — в полноширинную «Визуальную историю».
+const galleryItems = gallery.map((g, i) => ({
+  ...g,
+  ratio: g.ratio || (i < 2 ? '4 / 5' : '16 / 9'),
+}));
+const gridItems = galleryItems.filter((g) => g.ratio === '4 / 5');
+const wideItems = galleryItems.filter((g) => g.ratio !== '4 / 5');
 
 // BIM-координация остаётся только в архитектуре; в интерьерах/коммерции убираем
 const scope =
@@ -68,13 +75,13 @@ const scope =
       )
     }
 
-    {/* 3 — Первый визуальный блок */}
+    {/* 3 — Первый визуальный блок (портретная сетка 2-up) */}
     {
-      firstBlock.length > 0 && (
+      gridItems.length > 0 && (
         <section class="section-sm">
           <div class="wrap proj-firstblock">
-            {firstBlock.map((g) => (
-              <Figure name={g.name} alt={g.caption || `${p.name} — кадр`} ratio="4 / 5" />
+            {gridItems.map((g) => (
+              <Figure name={g.name} alt={g.caption || `${p.name} — кадр`} ratio={g.ratio} />
             ))}
           </div>
         </section>
@@ -140,18 +147,18 @@ const scope =
       </div>
     </section>
 
-    {/* 7 — Визуальная история (галерея) */}
+    {/* 7 — Визуальная история (широкие кадры) */}
     {
-      restGallery.length > 0 && (
+      wideItems.length > 0 && (
         <section class="section-sm">
           <div class="wrap">
             <h2 class="eyebrow text-muted-light mb-10" data-reveal>
               Визуальная история
             </h2>
             <div class="proj-gallery">
-              {restGallery.map((g) => (
+              {wideItems.map((g) => (
                 <figure class="proj-gallery__item" data-reveal>
-                  <Figure name={g.name} alt={g.caption || `${p.name} — кадр`} ratio="16 / 9" />
+                  <Figure name={g.name} alt={g.caption || `${p.name} — кадр`} ratio={g.ratio} />
                   {g.caption && <figcaption class="proj-gallery__cap">{g.caption}</figcaption>}
                 </figure>
               ))}
