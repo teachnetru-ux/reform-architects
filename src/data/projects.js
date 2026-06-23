@@ -179,7 +179,7 @@ export const projects = [
     type: 'Архитектура',
     category: 'houses',
     order: 6,
-    featured: true,
+    featured: false, // на главной не показываем; остаётся в каталоге и на своей странице
     area: '350 м²',
     city: 'Казань',
     tagline: 'Дом для двух поколений, построенный на балансе близости и автономии.',
