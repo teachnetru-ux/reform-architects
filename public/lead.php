@@ -87,22 +87,56 @@ if ($form_type === 'private') {
     $name  = clean($_POST['name'] ?? '', 150);
     $phone = clean($_POST['phone'] ?? '', 30);
     $type  = clean($_POST['project_type'] ?? '', 50);
-    if ($name === '' || $phone === '') {
-        echo json_encode(['ok' => false, 'error' => 'required fields missing']);
-        exit;
-    }
     $company = $project = $role = $contact = '';
 } else {
     $company = clean($_POST['company'] ?? '', 200);
     $project = clean($_POST['project_name'] ?? '', 200);
     $role    = clean($_POST['role'] ?? '', 150);
     $contact = clean($_POST['contact'] ?? '', 150);
-    if ($contact === '') {
-        echo json_encode(['ok' => false, 'error' => 'required fields missing']);
-        exit;
-    }
     $name = $phone = $type = '';
 }
+
+// ── Антиспам: серверная валидация (тихий выход при провале) ───────
+// Боты бьют POST-ом напрямую по lead.php в обход формы: без Referer/Origin,
+// с пустым project_type, телефоном без маски. Любой провал проверок ниже —
+// ответ {"ok":true} и exit: бот видит «успех» и не подбирает обход, но в БД,
+// Telegram и почту НИЧЕГО не уходит. (Honeypot `website` проверен выше.)
+
+// 1) Запрос должен прийти со своего домена. Реальная форма отправляется через
+//    fetch со страницы reform-architects.ru, поэтому браузер шлёт Origin и/или
+//    Referer с нашим доменом. Нет домена ни там, ни там — тихий выход.
+$site_host   = 'reform-architects.ru';
+$origin_hdr  = $_SERVER['HTTP_ORIGIN'] ?? '';
+$referer_hdr = $_SERVER['HTTP_REFERER'] ?? '';
+if (strpos($origin_hdr, $site_host) === false && strpos($referer_hdr, $site_host) === false) {
+    echo json_encode(['ok' => true]);
+    exit;
+}
+
+// 2) Валидация по типу формы.
+if ($form_type === 'private') {
+    // Имя 2–150; телефон — 11–15 цифр; тип объекта строго из списка формы
+    // (главный фильтр: боты шлют пустой project_type).
+    $phone_digits  = preg_replace('/\D/', '', $phone);
+    $allowed_types = ['Дом', 'Квартира', 'Коммерция'];
+    if (
+        mb_strlen($name) < 2 || mb_strlen($name) > 150 ||
+        strlen($phone_digits) < 11 || strlen($phone_digits) > 15 ||
+        !in_array($type, $allowed_types, true)
+    ) {
+        echo json_encode(['ok' => true]);
+        exit;
+    }
+} else {
+    // Девелоперской форме обязателен контакт (телефон или email), 3–150.
+    if (mb_strlen($contact) < 3 || mb_strlen($contact) > 150) {
+        echo json_encode(['ok' => true]);
+        exit;
+    }
+}
+
+// 3) Проверка «человечности» по времени отправки не добавлена: у формы нет
+//    скрытого поля с таймстампом загрузки, а фронт по условию не трогаем.
 
 // UTM
 $utm_source   = clean($_POST['utm_source'] ?? '');
