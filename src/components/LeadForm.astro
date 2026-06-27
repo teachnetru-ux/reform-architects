@@ -11,18 +11,21 @@ interface Props {
   eyebrow?: string;
   title?: string;
   subtitle?: string;
+  /** Если задан — на корневой <section> ставится data-scroll-goal (scroll-аналитика, только на главной). */
+  scrollGoal?: string;
 }
 const {
   id = 'contact',
   eyebrow = 'Контакт',
   title = 'Обсудим ваш проект',
   subtitle = 'Расскажите, что планируете — предложим следующий шаг.',
+  scrollGoal,
 } = Astro.props;
 
 const uid = Math.random().toString(36).slice(2, 8);
 ---
 
-<section id={id} class="section form-section">
+<section id={id} class="section form-section" data-scroll-goal={scrollGoal}>
   <div class="wrap">
     <div class="form-layout">
       <div class="form-intro" data-reveal>

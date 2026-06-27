@@ -13,6 +13,8 @@ interface Props {
   ogImage?: string;
   headerTransparent?: boolean;
   noindex?: boolean;
+  /** Идентификатор scroll-цели футера (ставится только на главной). */
+  footerScrollGoal?: string;
 }
 
 const {
@@ -21,6 +23,7 @@ const {
   ogImage = 'og-default',
   headerTransparent = false,
   noindex = false,
+  footerScrollGoal,
 } = Astro.props;
 
 const fullTitle = title === site.name ? `${site.name} — ${site.tagline}` : `${title} — ${site.name}`;
@@ -106,7 +109,7 @@ const orgLd = {
     <main id="main">
       <slot />
     </main>
-    <Footer />
+    <Footer scrollGoal={footerScrollGoal} />
     <CookieBanner />
 
     <script>

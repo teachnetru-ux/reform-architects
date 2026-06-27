@@ -2,6 +2,12 @@
 import { site } from '../data/site.js';
 import { withBase } from '../lib/img.js';
 
+interface Props {
+  /** Если задан — на корневой <footer> ставится data-scroll-goal (scroll-аналитика, только на главной). */
+  scrollGoal?: string;
+}
+const { scrollGoal } = Astro.props;
+
 const navKey: Record<string, string> = {
   '/projects/': 'projects',
   '/developers/': 'developers',
@@ -9,7 +15,7 @@ const navKey: Record<string, string> = {
 };
 ---
 
-<footer class="site-footer" id="footer">
+<footer class="site-footer" id="footer" data-scroll-goal={scrollGoal}>
   <div class="wrap section-sm">
     <div class="footer-grid">
       <div class="footer-brand">

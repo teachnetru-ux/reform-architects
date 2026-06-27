@@ -59,7 +59,7 @@ export const projects = [
     category: 'apartments',
     order: 1,
     featured: true,
-    area: '74 м²',
+    area: '120 м²',
     year: null,
     status: null,
     city: 'Казань, ЖК «Luciano»',

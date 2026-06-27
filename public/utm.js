@@ -35,3 +35,49 @@
     }
   });
 })();
+
+// Scroll-depth аналитика: фиксируем долистывание до блоков (один раз за визит).
+// Порог 50%: блок засчитывается, когда >=50% его площади в окне,
+// ИЛИ (для блоков выше высоты экрана) когда пользователь проскроллил через его середину.
+(function () {
+  function initScrollGoals() {
+    var els = document.querySelectorAll('[data-scroll-goal]');
+    if (!els.length || !('IntersectionObserver' in window)) return;
+
+    var fired = {};
+
+    function fire(el) {
+      var goal = el.getAttribute('data-scroll-goal');
+      if (goal && !fired[goal]) {
+        fired[goal] = true;
+        if (typeof ym !== 'undefined') ym(98224185, 'reachGoal', goal);
+        return true;
+      }
+      return false;
+    }
+
+    var observer = new IntersectionObserver(function (entries) {
+      entries.forEach(function (entry) {
+        var el = entry.target;
+        var vh = window.innerHeight || document.documentElement.clientHeight;
+        var rect = entry.boundingClientRect;
+        // Случай 1: блок ниже высоты экрана — видно >=50% его площади
+        var ratioOk = entry.intersectionRatio >= 0.5;
+        // Случай 2: высокий блок (выше экрана) — середина блока прошла середину экрана
+        var midReached = rect.height > vh &&
+          rect.top <= vh / 2 && rect.bottom >= vh / 2;
+        if (entry.isIntersecting && (ratioOk || midReached)) {
+          if (fire(el)) observer.unobserve(el);
+        }
+      });
+    }, { threshold: [0, 0.25, 0.5, 0.75, 1] });
+
+    els.forEach(function (el) { observer.observe(el); });
+  }
+
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', initScrollGoals);
+  } else {
+    initScrollGoals();
+  }
+})();

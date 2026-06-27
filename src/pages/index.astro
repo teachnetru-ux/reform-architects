@@ -16,9 +16,9 @@ const description =
   'Reform Architects — архитектурное бюро полного цикла. Проектируем дома, резиденции и интерьеры и ведём их до реализации в едином контуре ответственности. С 2016 года, 160+ объектов.';
 ---
 
-<Layout title={site.name} description={description} headerTransparent={true}>
+<Layout title={site.name} description={description} headerTransparent={true} footerScrollGoal="scroll_footer">
   {/* ── Блок 1 — Hero ─────────────────────────────────────────── */}
-  <section class="hero">
+  <section class="hero" data-scroll-goal="scroll_hero">
     <div class="hero__media" aria-hidden="true">
       <Figure
         name="hero"
@@ -49,7 +49,7 @@ const description =
   </section>
 
   {/* ── Блок 2 — Сегментация ──────────────────────────────────── */}
-  <section aria-labelledby="segments-title">
+  <section aria-labelledby="segments-title" data-scroll-goal="scroll_segments">
     <div class="wrap segments-intro">
       <SectionHeading id="segments-title" eyebrow="Направления" title="Ваш сценарий проекта" />
     </div>
@@ -57,7 +57,7 @@ const description =
   </section>
 
   {/* ── Блок 3 — Философия ────────────────────────────────────── */}
-  <section class="section">
+  <section class="section" data-scroll-goal="scroll_philosophy">
     <div class="wrap">
       <SectionHeading
         eyebrow="Философия"
@@ -79,7 +79,7 @@ const description =
   </section>
 
   {/* ── Блок 4 — Цифры ────────────────────────────────────────── */}
-  <section class="section bg-surface-dark text-ondark">
+  <section class="section bg-surface-dark text-ondark" data-scroll-goal="scroll_stats">
     <div class="wrap">
       <SectionHeading eyebrow="Цифры" title="Опыт, который можно измерить" tone="dark" />
       <div class="mt-12 md:mt-16">
@@ -89,7 +89,7 @@ const description =
   </section>
 
   {/* ── Блок 5 — Проекты ──────────────────────────────────────── */}
-  <section class="section">
+  <section class="section" data-scroll-goal="scroll_projects">
     <div class="wrap">
       <div class="block-head">
         <SectionHeading
@@ -112,7 +112,7 @@ const description =
   </section>
 
   {/* ── Блок 6 — Контроль и регламенты ────────────────────────── */}
-  <section class="section bg-surface-dark text-ondark">
+  <section class="section bg-surface-dark text-ondark" data-scroll-goal="scroll_clarity">
     <div class="wrap">
       <SectionHeading
         eyebrow="Контроль"
@@ -134,7 +134,7 @@ const description =
   </section>
 
   {/* ── Блок 7 — Процесс ──────────────────────────────────────── */}
-  <section class="section">
+  <section class="section" data-scroll-goal="scroll_process">
     <div class="wrap">
       <SectionHeading
         eyebrow="Процесс"
@@ -148,7 +148,7 @@ const description =
   </section>
 
   {/* ── Блок 8 — Команда ──────────────────────────────────────── */}
-  <section class="section bg-surface-dark text-ondark">
+  <section class="section bg-surface-dark text-ondark" data-scroll-goal="scroll_team">
     <div class="wrap">
       <SectionHeading eyebrow="Команда" title="Основатели" tone="dark" />
       <div class="founders">
@@ -177,7 +177,7 @@ const description =
   </section>
 
   {/* ── Блок 9 — Форма захвата ────────────────────────────────── */}
-  <LeadForm />
+  <LeadForm scrollGoal="scroll_form" />
 </Layout>
 
 <style>
