@@ -11,11 +11,11 @@
     sessionStorage.setItem('utm_page', window.location.pathname);
   }
 
-  // Программа ВТБ Family: при заходе на /vtb-family ставим флаг на сеанс.
+  // Программа Family: при заходе на /family ставим флаг на сеанс.
   // Тогда даже если посетитель уйдёт на главную и отправит форму там,
-  // form_type останется vtb_family — атрибуция привилегии не теряется.
-  if (window.location.pathname.indexOf('/vtb-family') === 0) {
-    sessionStorage.setItem('program', 'vtb_family');
+  // form_type останется family — атрибуция привилегии не теряется.
+  if (window.location.pathname.indexOf('/family') === 0) {
+    sessionStorage.setItem('program', 'family');
   }
 
   // Подставляем UTM в скрытые поля формы перед отправкой
@@ -29,12 +29,27 @@
       if (refInput) refInput.value = sessionStorage.getItem('utm_referrer') || '';
       var pageInput = form.querySelector('input[name="utm_page"]');
       if (pageInput) pageInput.value = sessionStorage.getItem('utm_page') || window.location.pathname;
-      // Если в сеансе стоит флаг программы (ВТБ Family) — фиксируем form_type,
+      // Если в сеансе стоит флаг программы (Family) — фиксируем form_type,
       // даже когда форма по умолчанию private (например, на главной).
       var program = sessionStorage.getItem('program');
       if (program) {
         var ftInput = form.querySelector('input[name="form_type"]');
         if (ftInput) ftInput.value = program;
+      }
+
+      // Строка-подтверждение Family на любой форме сайта (главная, проекты,
+      // девелоперы), если посетитель пришёл по программе. Дедуп ищем по всей
+      // секции формы (.form-section): на /family фраза уже есть в .form-intro
+      // (programNote) — рядом с <form>, но вне неё, поэтому не дублируем.
+      if (sessionStorage.getItem('program') === 'family') {
+        var scope = form.closest('.form-section') || form;
+        if (scope.textContent.indexOf('Family закрепляются автоматически') === -1) {
+          var note = document.createElement('p');
+          note.className = 'form-note';
+          note.textContent = 'Условия программы Family закрепляются автоматически — отдельный код вводить не нужно.';
+          var submit = form.querySelector('button[type="submit"]');
+          if (submit && submit.parentNode) submit.parentNode.insertBefore(note, submit);
+        }
       }
     });
   });

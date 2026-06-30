@@ -17,7 +17,7 @@ export default defineConfig({
   build: { format: 'directory' },
   integrations: [
     tailwind({ applyBaseStyles: false }),
-    // /vtb-family — закрытый партнёрский лендинг (noindex), исключаем из карты сайта
-    sitemap({ filter: (page) => !page.includes('/vtb-family') }),
+    // /family — закрытый партнёрский лендинг (noindex), исключаем из карты сайта
+    sitemap({ filter: (page) => !page.includes('/family') }),
   ],
 });
