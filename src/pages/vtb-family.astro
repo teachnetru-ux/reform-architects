@@ -1,0 +1,322 @@
+---
+import Layout from '../components/Layout.astro';
+import SectionHeading from '../components/SectionHeading.astro';
+import SegmentCards from '../components/SegmentCards.astro';
+import NumbersRow from '../components/NumbersRow.astro';
+import ProcessSteps from '../components/ProcessSteps.astro';
+import ProjectCard from '../components/ProjectCard.astro';
+import Figure from '../components/Figure.astro';
+import LeadForm from '../components/LeadForm.astro';
+import { site } from '../data/site.js';
+import { withBase } from '../lib/img.js';
+import { pillars, controls, founders, teamRoles } from '../data/content.js';
+import { showcase } from '../data/projects.js';
+
+const description =
+  'Reform Architects для клиентов программы ВТБ Family: архитектура и интерьеры полного цикла, особые условия — 15% на проектирование. С 2016 года, 160+ объектов.';
+---
+
+<Layout
+  title="Reform Architects — программа ВТБ Family"
+  description={description}
+  headerTransparent={true}
+  footerScrollGoal="scroll_footer"
+  noindex={true}
+>
+  {/* ── Блок 1 — Hero ─────────────────────────────────────────── */}
+  <section class="hero" data-scroll-goal="scroll_hero">
+    <div class="hero__media" aria-hidden="true">
+      <Figure
+        name="hero"
+        alt="Reform Architects — архитектурное бюро полного цикла"
+        fill={true}
+        eager={true}
+        imgClass="hero__img"
+      />
+      <div class="hero__veil"></div>
+    </div>
+    <div class="wrap hero__inner">
+      <span class="hero__badge" data-reveal>Привилегия участников ВТБ Family — 15% на проектирование</span>
+      <p class="eyebrow hero__eyebrow" data-reveal>Архитектурное бюро полного цикла</p>
+      <h1 class="hero__title" data-reveal>
+        Архитектура, в которой выверено всё&nbsp;— от&nbsp;первой линии до&nbsp;последнего шва.
+      </h1>
+      <p class="hero__subtitle" data-reveal>
+        Бюро полного цикла. Проектируем дома, резиденции и интерьеры и ведём их до реализации в едином
+        контуре ответственности.
+      </p>
+      <div class="hero__cta glass-dark" data-reveal>
+        <a href={withBase('#contact')} class="btn btn--light" data-goal="hero_cta">
+          {site.cta.private}<span class="btn__arrow" aria-hidden="true">→</span>
+        </a>
+        <span class="hero__stats">С 2016 года · 160+ реализованных объектов</span>
+      </div>
+    </div>
+    <span class="hero__scroll" aria-hidden="true">Листайте</span>
+  </section>
+
+  {/* ── Блок 2 — Сегментация ──────────────────────────────────── */}
+  <section aria-labelledby="segments-title" data-scroll-goal="scroll_segments">
+    <div class="wrap segments-intro">
+      <SectionHeading id="segments-title" eyebrow="Направления" title="Ваш сценарий проекта" />
+    </div>
+    <SegmentCards />
+  </section>
+
+  {/* ── Блок 3 — Философия ────────────────────────────────────── */}
+  <section class="section" data-scroll-goal="scroll_philosophy">
+    <div class="wrap">
+      <SectionHeading
+        eyebrow="Философия"
+        title="Премиальность — это управляемость."
+        lead="Уровень определяется не ценой материалов, а системой, в которой результат предсказуем на каждом этапе. Красивая визуализация — это обещание. Мы отвечаем за то, чтобы обещание стало пространством."
+      />
+      <div class="pillars">
+        {
+          pillars.map((p, i) => (
+            <article class="pillar" data-reveal>
+              <span class="pillar__num">{String(i + 1).padStart(2, '0')}</span>
+              <h3 class="pillar__title">{p.title}</h3>
+              <p class="pillar__text">{p.text}</p>
+            </article>
+          ))
+        }
+      </div>
+    </div>
+  </section>
+
+  {/* ── Блок 4 — Цифры ────────────────────────────────────────── */}
+  <section class="section bg-surface-dark text-ondark" data-scroll-goal="scroll_stats">
+    <div class="wrap">
+      <SectionHeading eyebrow="Цифры" title="Опыт, который можно измерить" tone="dark" />
+      <div class="mt-12 md:mt-16">
+        <NumbersRow />
+      </div>
+    </div>
+  </section>
+
+  {/* ── Блок 5 — Проекты ──────────────────────────────────────── */}
+  <section class="section" data-scroll-goal="scroll_projects">
+    <div class="wrap">
+      <div class="block-head">
+        <SectionHeading
+          eyebrow="Проекты"
+          title="Проекты, где видна система"
+          lead="Эстетика и реализация — единый процесс."
+        />
+        <a href={withBase('/projects/')} class="arrow-link block-head__link" data-goal="projects_all">
+          Все проекты<span class="arr" aria-hidden="true">→</span>
+        </a>
+      </div>
+      <div class="showcase">
+        {
+          showcase.map((p, i) => (
+            <ProjectCard project={p} eager={i < 3} goal={`project_${p.slug.replace(/-/g, '_')}`} />
+          ))
+        }
+      </div>
+    </div>
+  </section>
+
+  {/* ── Блок 6 — Контроль и регламенты ────────────────────────── */}
+  <section class="section bg-surface-dark text-ondark" data-scroll-goal="scroll_clarity">
+    <div class="wrap">
+      <SectionHeading
+        eyebrow="Контроль"
+        title="Контроль — это ясность"
+        lead="Решения фиксируются. Изменения управляются. Результат предсказуем."
+        tone="dark"
+      />
+      <div class="controls">
+        {
+          controls.map((c) => (
+            <article class="control" data-reveal>
+              <h3 class="control__title">{c.title}</h3>
+              <p class="control__text">{c.text}</p>
+            </article>
+          ))
+        }
+      </div>
+    </div>
+  </section>
+
+  {/* ── Блок 7 — Процесс ──────────────────────────────────────── */}
+  <section class="section" data-scroll-goal="scroll_process">
+    <div class="wrap">
+      <SectionHeading
+        eyebrow="Процесс"
+        title="Процесс с предсказуемым результатом на каждом этапе"
+        lead="Этап завершается зафиксированным решением — вы всегда понимаете, что происходит и что дальше."
+      />
+      <div class="mt-12 md:mt-16">
+        <ProcessSteps />
+      </div>
+    </div>
+  </section>
+
+  {/* ── Блок 8 — Команда ──────────────────────────────────────── */}
+  <section class="section bg-surface-dark text-ondark" data-scroll-goal="scroll_team">
+    <div class="wrap">
+      <SectionHeading eyebrow="Команда" title="Основатели" tone="dark" />
+      <div class="founders">
+        {
+          founders.map((f) => (
+            <article class="founder" data-reveal>
+              <Figure
+                name={f.image}
+                alt={`${f.name} — основатель Reform Architects`}
+                ratio="3 / 4"
+                imgClass="founder__img"
+              />
+              <h3 class="founder__name">{f.name}</h3>
+              <p class="founder__role">{f.role}</p>
+            </article>
+          ))
+        }
+      </div>
+      <div class="roles" data-reveal>
+        <p class="eyebrow text-muted-dark">Команда проекта</p>
+        <ul class="roles__list">
+          {teamRoles.map((r) => <li class="roles__item">{r}</li>)}
+        </ul>
+      </div>
+    </div>
+  </section>
+
+  {/* ── Блок 9 — Форма захвата ────────────────────────────────── */}
+  <LeadForm
+    scrollGoal="scroll_form"
+    formType="vtb_family"
+    eyebrow="Программа ВТБ Family"
+    programNote="Условия программы ВТБ Family закрепляются автоматически — отдельный код вводить не нужно."
+  />
+</Layout>
+
+<style>
+  .sr-only {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    padding: 0;
+    margin: -1px;
+    overflow: hidden;
+    clip: rect(0, 0, 0, 0);
+    white-space: nowrap;
+    border: 0;
+  }
+
+  .segments-intro {
+    padding-block: clamp(4rem, 3rem + 5vw, 7rem) clamp(2rem, 1.5rem + 3vw, 3.25rem);
+  }
+
+  .hero {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-end;
+    min-height: clamp(640px, 100svh, 940px);
+    padding-top: calc(var(--header-h) + 2rem);
+    padding-bottom: clamp(2.5rem, 2rem + 4vw, 5rem);
+    background: #161616;
+    color: #f4f2ec;
+    overflow: hidden;
+  }
+  .hero__media {
+    position: absolute;
+    inset: 0;
+    z-index: 0;
+  }
+  .hero :global(.hero__img) {
+    filter: brightness(0.62) grayscale(0.15);
+  }
+  .hero__veil {
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(
+      180deg,
+      rgba(16, 16, 16, 0.5) 0%,
+      rgba(16, 16, 16, 0.18) 32%,
+      rgba(16, 16, 16, 0.72) 100%
+    );
+  }
+  .hero__inner {
+    position: relative;
+    z-index: 1;
+    width: 100%;
+  }
+  .hero__badge {
+    display: inline-flex;
+    align-items: center;
+    align-self: flex-start;
+    margin-bottom: 1.25rem;
+    padding: 0.5rem 1rem;
+    border: 1px solid rgba(244, 242, 236, 0.32);
+    border-radius: 30px;
+    background: rgba(244, 242, 236, 0.08);
+    -webkit-backdrop-filter: blur(6px);
+    backdrop-filter: blur(6px);
+    font-family: var(--font-sans);
+    font-size: 0.75rem;
+    font-weight: 400;
+    letter-spacing: 0.06em;
+    line-height: 1.3;
+    color: rgba(244, 242, 236, 0.92);
+  }
+  .hero__eyebrow {
+    color: rgba(244, 242, 236, 0.72);
+  }
+  .hero__title {
+    margin-top: 1.5rem;
+    max-width: 18ch;
+    font-size: clamp(2.4rem, 1.4rem + 4vw, 3.5rem);
+    line-height: 1.06;
+    letter-spacing: -0.02em;
+  }
+  .hero__subtitle {
+    margin-top: 1.75rem;
+    max-width: 52ch;
+    font-family: var(--font-sans);
+    font-weight: 300;
+    font-size: clamp(1.0625rem, 1rem + 0.35vw, 1.1875rem);
+    line-height: 1.55;
+    color: rgba(244, 242, 236, 0.82);
+  }
+  .hero__cta {
+    margin-top: 2.25rem;
+    display: inline-flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 1rem 1.5rem;
+    padding: 0.85rem 0.95rem 0.85rem 0.95rem;
+    border-radius: 30px;
+  }
+  .hero__stats {
+    font-family: var(--font-sans);
+    font-size: 0.6875rem;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+    color: rgba(244, 242, 236, 0.72);
+    padding-right: 0.75rem;
+  }
+  .hero__scroll {
+    position: absolute;
+    right: clamp(20px, 4vw, 48px);
+    bottom: clamp(2.5rem, 2rem + 4vw, 5rem);
+    z-index: 1;
+    font-family: var(--font-sans);
+    font-size: 0.625rem;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: rgba(244, 242, 236, 0.5);
+    writing-mode: vertical-rl;
+    display: none;
+  }
+  @media (min-width: 768px) {
+    .hero__cta {
+      padding-left: 1rem;
+    }
+    .hero__scroll {
+      display: block;
+    }
+  }
+</style>

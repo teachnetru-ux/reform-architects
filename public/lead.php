@@ -81,9 +81,16 @@ $hits[] = $now;
 @file_put_contents($rl_file, implode(',', $hits));
 
 // ── Валидация и сбор данных ──────────────────────────────────────
-$form_type = (($_POST['form_type'] ?? '') === 'developer') ? 'developer' : 'private';
+$raw_form_type = $_POST['form_type'] ?? '';
+if ($raw_form_type === 'developer') {
+    $form_type = 'developer';
+} elseif ($raw_form_type === 'vtb_family') {
+    $form_type = 'vtb_family';
+} else {
+    $form_type = 'private';
+}
 
-if ($form_type === 'private') {
+if ($form_type === 'private' || $form_type === 'vtb_family') {
     $name  = clean($_POST['name'] ?? '', 150);
     $phone = clean($_POST['phone'] ?? '', 30);
     $type  = clean($_POST['project_type'] ?? '', 50);
@@ -114,7 +121,7 @@ if (strpos($origin_hdr, $site_host) === false && strpos($referer_hdr, $site_host
 }
 
 // 2) Валидация по типу формы.
-if ($form_type === 'private') {
+if ($form_type === 'private' || $form_type === 'vtb_family') {
     // Имя 2–150; телефон — 11–15 цифр; тип объекта строго из списка формы
     // (главный фильтр: боты шлют пустой project_type).
     $phone_digits  = preg_replace('/\D/', '', $phone);
@@ -205,12 +212,22 @@ try {
 // ── Telegram ─────────────────────────────────────────────────────
 function dash($v) { return $v !== '' ? tg_escape($v) : '—'; }
 
-if ($form_type === 'private') {
-    $tg_text = "🔔 *Новая заявка · Reform Architects*\n\n"
+if ($form_type === 'private' || $form_type === 'vtb_family') {
+    $is_vtb = ($form_type === 'vtb_family');
+    $header = $is_vtb
+        ? "🔔 *Новая заявка · ВТБ Family (−15%)*"
+        : "🔔 *Новая заявка · Reform Architects*";
+
+    $tg_text = $header . "\n\n"
         . "Имя:           " . dash($name) . "\n"
         . "Телефон:    " . dash($phone) . "\n"
-        . "Тип объекта: " . dash($type) . "\n\n"
-        . "*Источник*\n"
+        . "Тип объекта: " . dash($type) . "\n";
+
+    if ($is_vtb) {
+        $tg_text .= "\n🎁 *Клиент программы ВТБ Family — скидка 15% на проектирование*\n";
+    }
+
+    $tg_text .= "\n*Источник*\n"
         . "Страница:      " . dash($utm_page) . "\n"
         . "utm\\_source:   " . dash($utm_source) . "\n"
         . "utm\\_medium:  " . dash($utm_medium) . "\n"
@@ -255,9 +272,13 @@ curl_exec($ch);
 curl_close($ch);
 
 // ── Email-дубль ──────────────────────────────────────────────────
-if ($form_type === 'private') {
-    $email_body = "Новая заявка\n\nИмя: {$name}\nТелефон: {$phone}\nТип объекта: {$type}\n\n"
-        . "utm_source: {$utm_source}\nutm_medium: {$utm_medium}\nutm_campaign: {$utm_campaign}\n"
+if ($form_type === 'private' || $form_type === 'vtb_family') {
+    $email_intro = ($form_type === 'vtb_family') ? "Новая заявка · ВТБ Family" : "Новая заявка";
+    $email_body = "{$email_intro}\n\nИмя: {$name}\nТелефон: {$phone}\nТип объекта: {$type}\n\n";
+    if ($form_type === 'vtb_family') {
+        $email_body .= "Клиент ВТБ Family — скидка 15% на проектирование\n\n";
+    }
+    $email_body .= "utm_source: {$utm_source}\nutm_medium: {$utm_medium}\nutm_campaign: {$utm_campaign}\n"
         . "Страница: {$utm_page}\nРеферер: {$utm_referrer}\n\nВремя: {$date} МСК\nЗаявка #{$lead_id}";
 } else {
     $email_body = "Заявка от девелопера\n\nКомпания: {$company}\nПроект: {$project}\nРоль: {$role}\nКонтакт: {$contact}\n\n"
@@ -265,9 +286,10 @@ if ($form_type === 'private') {
         . "Страница: {$utm_page}\nРеферер: {$utm_referrer}\n\nВремя: {$date} МСК\nЗаявка #{$lead_id}";
 }
 
+$email_subject = ($form_type === 'vtb_family') ? 'Новая заявка · ВТБ Family' : 'Новая заявка · Reform Architects';
 mail(
     $email_to,
-    '=?UTF-8?B?' . base64_encode('Новая заявка · Reform Architects') . '?=',
+    '=?UTF-8?B?' . base64_encode($email_subject) . '?=',
     $email_body,
     "From: no-reply@reform-architects.ru\r\nContent-Type: text/plain; charset=UTF-8"
 );

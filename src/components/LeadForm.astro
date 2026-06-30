@@ -13,6 +13,10 @@ interface Props {
   subtitle?: string;
   /** Если задан — на корневой <section> ставится data-scroll-goal (scroll-аналитика, только на главной). */
   scrollGoal?: string;
+  /** Тип формы для скрытого поля form_type (по умолчанию 'private'; 'vtb_family' — лендинг ВТБ Family). */
+  formType?: string;
+  /** Опциональная доп. строка под формой (напр., условия программы ВТБ Family). */
+  programNote?: string;
 }
 const {
   id = 'contact',
@@ -20,6 +24,8 @@ const {
   title = 'Обсудим ваш проект',
   subtitle = 'Расскажите, что планируете — предложим следующий шаг.',
   scrollGoal,
+  formType = 'private',
+  programNote,
 } = Astro.props;
 
 const uid = Math.random().toString(36).slice(2, 8);
@@ -33,6 +39,7 @@ const uid = Math.random().toString(36).slice(2, 8);
         <h2 class="text-h2">{title}</h2>
         <p class="mt-4 text-lead text-muted-light">{subtitle}</p>
         <p class="form-note">Мы не передаём ваши контакты третьим лицам.</p>
+        {programNote && <p class="form-note">{programNote}</p>}
       </div>
 
       <form class="lead-form" action="/lead.php" method="POST" data-lead data-reveal>
@@ -85,7 +92,7 @@ const uid = Math.random().toString(36).slice(2, 8);
           <input type="hidden" name="utm_content" />
           <input type="hidden" name="utm_referrer" />
           <input type="hidden" name="utm_page" />
-          <input type="hidden" name="form_type" value="private" />
+          <input type="hidden" name="form_type" value={formType} />
 
           <button type="submit" class="btn btn--solid form-submit">
             {site.cta.private}<span class="btn__arrow" aria-hidden="true">→</span>

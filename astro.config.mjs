@@ -15,5 +15,9 @@ export default defineConfig({
   site: 'https://reform-architects.ru',
   trailingSlash: 'ignore',
   build: { format: 'directory' },
-  integrations: [tailwind({ applyBaseStyles: false }), sitemap()],
+  integrations: [
+    tailwind({ applyBaseStyles: false }),
+    // /vtb-family — закрытый партнёрский лендинг (noindex), исключаем из карты сайта
+    sitemap({ filter: (page) => !page.includes('/vtb-family') }),
+  ],
 });

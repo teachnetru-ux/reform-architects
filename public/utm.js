@@ -11,6 +11,13 @@
     sessionStorage.setItem('utm_page', window.location.pathname);
   }
 
+  // Программа ВТБ Family: при заходе на /vtb-family ставим флаг на сеанс.
+  // Тогда даже если посетитель уйдёт на главную и отправит форму там,
+  // form_type останется vtb_family — атрибуция привилегии не теряется.
+  if (window.location.pathname.indexOf('/vtb-family') === 0) {
+    sessionStorage.setItem('program', 'vtb_family');
+  }
+
   // Подставляем UTM в скрытые поля формы перед отправкой
   document.addEventListener('DOMContentLoaded', function () {
     document.querySelectorAll('form[data-lead]').forEach(function (form) {
@@ -22,6 +29,13 @@
       if (refInput) refInput.value = sessionStorage.getItem('utm_referrer') || '';
       var pageInput = form.querySelector('input[name="utm_page"]');
       if (pageInput) pageInput.value = sessionStorage.getItem('utm_page') || window.location.pathname;
+      // Если в сеансе стоит флаг программы (ВТБ Family) — фиксируем form_type,
+      // даже когда форма по умолчанию private (например, на главной).
+      var program = sessionStorage.getItem('program');
+      if (program) {
+        var ftInput = form.querySelector('input[name="form_type"]');
+        if (ftInput) ftInput.value = program;
+      }
     });
   });
 
